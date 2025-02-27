@@ -1,3 +1,3 @@
 # chuu.dev
 
-This is a blog made with [Zola](https://www.getzola.org/).
+This is a blog made with [Zola](https://www.getzola.org/)!
