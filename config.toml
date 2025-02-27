@@ -1,7 +1,6 @@
 base_url = "https://chuu.dev/"
 compile_sass = true
 build_search_index = true
-output_dir = "docs"
 
 [markdown]
 highlight_code = true
