@@ -1,0 +1,12 @@
+base_url = "https://chuu.dev/"
+compile_sass = true
+build_search_index = true
+
+[markdown]
+highlight_code = true
+highlight_theme = "cheerfully-light"
+render_emoji = true
+
+[extra]
+theme = "dark"
+mastodon_base_url = "https://mastodon.social"

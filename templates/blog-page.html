@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+    {{ page.title }}
+</h1>
+<p class="subtitle"><strong>{{ page.date }}</strong></p>
+
+{{ page.content | safe }}
+
+
+<script>
+    async function load_comments(postid) {
+        console.log("LOAD COMMENTS, ID: " + postid)
+
+        const url = `https://mastodon.social/api/v1/statuses/${postid}/context`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            const json = await response.json();
+
+            // {"ancestors":[],"descendants":[{"id":"114075307115560715","created_at":"2025-02-27T10:10:48.514Z","in_reply_to_id":"114075174358638781","in_reply_to_account_id":"114074824280276466","sensitive":false,"spoiler_text":"","visibility":"public","language":"en","uri":"https://mastodon.social/users/chuu_p/statuses/114075307115560715","url":"https://mastodon.social/@chuu_p/114075307115560715","replies_count":0,"reblogs_count":0,"favourites_count":0,"edited_at":null,"favourited":false,"reblogged":false,"muted":false,"bookmarked":false,"pinned":false,"content":"\u003cp\u003eTest Reply / Test Comment\u003c/p\u003e","filtered":[],"reblog":null,"application":{"name":"Web","website":null},"account":{"id":"114074824280276466","username":"chuu_p","acct":"chuu_p","display_name":"chuu","locked":false,"bot":false,"discoverable":true,"indexable":true,"group":false,"created_at":"2025-02-27T00:00:00.000Z","note":"\u003cp\u003eride fast die last\u003c/p\u003e","url":"https://mastodon.social/@chuu_p","uri":"https://mastodon.social/users/chuu_p","avatar":"https://files.mastodon.social/accounts/avatars/114/074/824/280/276/466/original/0e65305f001cef84.png","avatar_static":"https://files.mastodon.social/accounts/avatars/114/074/824/280/276/466/original/0e65305f001cef84.png","header":"https://files.mastodon.social/accounts/headers/114/074/824/280/276/466/original/28edd16ce133eb60.png","header_static":"https://files.mastodon.social/accounts/headers/114/074/824/280/276/466/original/28edd16ce133eb60.png","followers_count":0,"following_count":0,"statuses_count":2,"last_status_at":"2025-02-27","hide_collections":null,"noindex":false,"emojis":[],"roles":[],"fields":[]},"media_attachments":[],"mentions":[],"tags":[],"emojis":[],"card":null,"poll":null}]}
+
+            // <a id="comments-view"></a>
+            populate_comments(json);
+
+        } catch (error) {
+            alert(`Error loading comments: ${error.message}`);
+            console.error(error.message);
+        }
+    }
+
+    function populate_comments(data) {
+        const commentsView = document.getElementById("comments-view");
+        if (!commentsView) {
+            console.error("comments-view element not found");
+            return;
+        }
+        // Clear existing comments
+        commentsView.innerHTML = "";
+
+        // Handle descendants (replies)
+        if (data && data.descendants && data.descendants.length > 0) {
+            data.descendants.forEach(comment => {
+                const commentDiv = document.createElement("div");
+                commentDiv.classList.add("comment");
+
+                // Avatar
+                const avatar = document.createElement("img");
+                avatar.src = comment.account.avatar;
+                avatar.alt = comment.account.display_name + " avatar";
+                avatar.classList.add("comment-avatar");
+                commentDiv.appendChild(avatar);
+
+                // Content
+                const contentDiv = document.createElement("div");
+                contentDiv.classList.add("comment-content");
+                contentDiv.innerHTML = comment.content;
+                commentDiv.appendChild(contentDiv);
+
+                // Author name
+                const authorName = document.createElement("div");
+                authorName.classList.add("comment-author");
+                authorName.textContent = comment.account.display_name;
+                contentDiv.prepend(authorName);
+
+                commentsView.appendChild(commentDiv);
+            });
+        } else {
+            const noComments = document.createElement("p");
+            noComments.textContent = "No comments yet.";
+            commentsView.appendChild(noComments);
+        }
+    }
+
+</script>
+
+<button onclick={{"load_comments('" ~ page.extra.postid ~ "')" }}>LOAD</button>
+
+<a id="comments-view">View</a>
+
+{% endblock content %}

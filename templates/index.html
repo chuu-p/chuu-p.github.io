@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+    Hi there! <span class="emoji">👋</span>
+</h1>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex-grow: 1; padding-right: 20px;">
+        I am a software developer guy living in germany.
+        <p><a href="{{ get_url(path='@/blog/_index.md') }}">/blog</a></p>
+        <p><a href="{{ get_url(path='@/about/_index.md') }}">/about</a></p>
+    </div>
+    <img style="max-width: 25%;" src="{{ get_url(path='miku/miku_hello.png') }}" />
+</div>
+
+{% endblock content %}
