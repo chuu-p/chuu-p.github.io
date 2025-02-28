@@ -5,7 +5,29 @@
     <meta charset="utf-8">
     <title>MyBlog</title>
     <link rel="stylesheet" href="{{ get_url(path='style.css', trailing_slash=false) | safe }}" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Emoji|Space+Mono|Space+Grotesk|VT323">
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Emoji|Space+Mono|Space+Grotesk|VT323"> -->
+    <style>
+        @font-face {
+            font-family: "Noto Emoji";
+            src: url("{{ get_url(path='NotoEmoji-Medium.ttf', trailing_slash=false) | safe }}");
+        }
+
+        @font-face {
+            font-family: "Space Grotesk";
+            src: url("{{ get_url(path='SpaceGrotesk-Medium.ttf', trailing_slash=false) | safe }}");
+        }
+
+        @font-face {
+            font-family: "VT323";
+            src: url("{{ get_url(path='VT323-Regular.ttf', trailing_slash=false) | safe }}");
+        }
+
+        @font-face {
+            font-family: "Space Mono";
+            src: url("{{ get_url(path='SpaceMono-Regular.ttf', trailing_slash=false) | safe }}");
+        }
+    </style>
+
 </head>
 
 
