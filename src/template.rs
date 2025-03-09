@@ -58,7 +58,7 @@ pub fn template(inner: String) -> Markup {
                 (PreEscaped("code:not([class]) { color: #86cecb; }"))
             }
             // link rel="stylesheet" href="styles/github-dark.css";
-            link rel="stylesheet" href="styles/ir-black.css";
+            link rel="stylesheet" href="styles/ir-black.min.css";
 
             script { "hljs.highlightAll();" }
 
