@@ -49,17 +49,30 @@
   }
 
   /* Lists */
-  ul {
-    @apply list-disc list-inside mb-4;
+  ul,
+  ol {
+    @apply list-inside mb-4;
   }
 
-  ol {
-    @apply list-decimal list-inside mb-4;
+  ul>li {
+    @apply list-disc;
+  }
+
+  ol>li {
+    @apply list-decimal;
   }
 
   li {
     @apply mb-1;
   }
+
+  /* Nested lists */
+  li>ul,
+  li>ol {
+    @apply ml-4;
+    /* Indent nested lists */
+  }
+
 
   /* Code & Preformatted Text */
   code {
