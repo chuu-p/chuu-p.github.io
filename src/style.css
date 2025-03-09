@@ -1,0 +1,118 @@
+@layer base {
+  h1 {
+    @apply text-4xl md:text-6xl font-bold mt-8 mb-4;
+  }
+
+  h2 {
+    @apply text-3xl md:text-5xl font-semibold mt-6 mb-3;
+  }
+
+  h3 {
+    @apply text-2xl md:text-4xl font-medium mt-5 mb-2;
+  }
+
+  h4 {
+    @apply text-xl md:text-3xl mt-4 mb-2;
+  }
+
+  h5 {
+    @apply text-lg md:text-2xl mt-3 mb-1;
+  }
+
+  h6 {
+    @apply text-base md:text-xl mt-2 mb-1;
+  }
+
+  /* Text Elements */
+  p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  a {
+    @apply text-blue-400 underline hover:text-blue-300;
+  }
+
+  strong {
+    @apply font-bold;
+  }
+
+  em {
+    @apply italic;
+  }
+
+  del {
+    @apply line-through;
+  }
+
+  blockquote {
+    @apply border-l-4 border-gray-500 pl-4 italic text-gray-400 my-4;
+  }
+
+  /* Lists */
+  ul {
+    @apply list-disc list-inside mb-4;
+  }
+
+  ol {
+    @apply list-decimal list-inside mb-4;
+  }
+
+  li {
+    @apply mb-1;
+  }
+
+  /* Code & Preformatted Text */
+  code {
+    @apply bg-gray-800 text-pink-400 px-1 py-0.5 rounded;
+  }
+
+  pre {
+    @apply bg-gray-900 text-white rounded-md overflow-x-auto text-sm leading-relaxed mb-4;
+  }
+
+  /* Horizontal Rule */
+  hr {
+    @apply border-t border-gray-600 my-6;
+  }
+
+  /* Tables */
+  table {
+    @apply w-full border-collapse border border-gray-600 my-4;
+  }
+
+  th,
+  td {
+    @apply border border-gray-600 px-3 py-2;
+  }
+
+  th {
+    @apply bg-gray-800 text-white font-semibold;
+  }
+
+  /* Images */
+  img {
+    @apply max-w-full rounded-lg shadow-md my-4;
+  }
+
+  /* Inline Elements */
+  mark {
+    @apply bg-yellow-300 text-black px-1;
+  }
+
+  sub {
+    @apply text-xs align-sub;
+  }
+
+  sup {
+    @apply text-xs align-super;
+  }
+
+  /* Details/Summary */
+  details {
+    @apply bg-gray-800 rounded-lg p-2 cursor-pointer;
+  }
+
+  summary {
+    @apply font-semibold;
+  }
+}
