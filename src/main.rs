@@ -331,9 +331,9 @@ fn blog_preview() -> Markup {
 ///
 /// This function panics if `entry_path.to_str()` or `target_path.to_str()` return `None`.
 /// This can happen if the path contains invalid Unicode.
-// https://stackoverflow.com/a/65192210/26371953
+/// see: https://stackoverflow.com/a/65192210/26371953
 fn copy_static_content(src: &str, dst: &str) -> io::Result<()> {
-    fs::create_dir_all(&dst)?;
+    fs::create_dir_all(dst)?;
 
     for entry in fs::read_dir(src)? {
         let entry = entry?;
@@ -349,25 +349,56 @@ fn copy_static_content(src: &str, dst: &str) -> io::Result<()> {
     Ok(())
 }
 
-/// Determines whether a file should be copied from source to destination.
-///
-/// The function checks if the destination file exists. If it does not exist,
-/// the function returns `Ok(true)`, indicating that the file should be copied.
-/// If the destination file exists, the function compares the modification times
-/// of the source and destination files. If the source file is newer than the
-/// destination file, the function returns `Ok(true)`. Otherwise, it returns
-/// `Ok(false)`.
+/// Determines whether a file should be copied based on its modification time.
 ///
 /// # Arguments
 ///
-/// * `src` - A reference to a `Path` representing the source file.
-/// * `dst` - A reference to a `Path` representing the destination file.
+/// * `src` - The source file path.
+/// * `dst` - The destination file path.
 ///
 /// # Returns
 ///
 /// * `Ok(true)` if the file should be copied.
 /// * `Ok(false)` if the file should not be copied.
-/// * `Err(io::Error)` if an error occurred during metadata retrieval.
+/// * `Err(io::Error)` if an I/O error occurs.
+///
+/// # Examples
+///
+/// ```
+/// use std::fs::{self, File};
+/// use std::io::Write;
+/// use std::path::Path;
+/// use std::thread::sleep;
+/// use std::time::Duration;
+///
+/// let src_path = Path::new("src.txt");
+/// let dst_path = Path::new("dst.txt");
+///
+/// // Create a source file
+/// let mut src_file = File::create(&src_path).unwrap();
+/// writeln!(src_file, "Source file content").unwrap();
+///
+/// // Ensure the file system timestamps differ
+/// sleep(Duration::from_secs(2));
+///
+/// // Create a destination file (older)
+/// let mut dst_file = File::create(&dst_path).unwrap();
+/// writeln!(dst_file, "Destination file content").unwrap();
+///
+/// assert!(should_copy_file(&src_path, &dst_path).unwrap());
+///
+/// // Update the destination file to be newer
+/// sleep(Duration::from_secs(2));
+/// fs::write(&dst_path, "Updated destination content").unwrap();
+/// assert!(!should_copy_file(&src_path, &dst_path).unwrap());
+///
+/// // If destination doesn't exist, should copy
+/// fs::remove_file(&dst_path).unwrap();
+/// assert!(should_copy_file(&src_path, &dst_path).unwrap());
+///
+/// // Cleanup
+/// fs::remove_file(&src_path).unwrap();
+/// ```
 fn should_copy_file(src: &Path, dst: &Path) -> io::Result<bool> {
     match fs::metadata(dst) {
         Ok(dst_metadata) => {

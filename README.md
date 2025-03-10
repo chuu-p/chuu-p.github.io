@@ -1,4 +1,4 @@
- <img src="/public/miku_catty.png" align="right" width="128" />
+ <img src="/public/miku_catty.png" align="right" width="25%" />
 
 # chuu.dev
 
