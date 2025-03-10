@@ -1,6 +1,6 @@
  <img src="/public/miku_catty.png" align="right" width="20%" />
 
-# chuu.dev
+# [chuu.dev](https://chuu.dev)
 
 Powered by [rust / hypertext](https://crates.io/crates/hypertext)
 
