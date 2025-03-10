@@ -2,9 +2,16 @@
 
 # [chuu.dev](https://chuu.dev)
 
-Powered by [rust / hypertext](https://crates.io/crates/hypertext)
+A static site generator written in rust.
 
-Inspired by [0atman's brainmade.org website](https://github.com/0atman/Brainmade-org)
+Powered by 
+- [maud](https://github.com/lambda-fairy/maud)
+- [handlebars](https://github.com/sunng87/handlebars-rust)
+- [pulldown-cmark](https://github.com/pulldown-cmark/pulldown-cmark)
+
+Inspired by 
+- [0atman's brainmade.org website](https://github.com/0atman/Brainmade-org)
+- [Zola](https://github.com/getzola/zola)
 
 Comments via [Mastodon](https://mastodon.social/@chuu_p)
 
