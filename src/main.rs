@@ -1,33 +1,80 @@
+use blog::copy_static_content;
 use color_eyre::Report;
 
-use crate::template::template;
-use handlebars::Handlebars;
-use mastodon_comments::mastodon_comments;
-use maud::{html, Markup, PreEscaped, Render, DOCTYPE};
+use crate::components::mastodon_comments::mastodon_comments;
+use crate::components::template::template;
+use handlebars::{Handlebars, RenderError};
+use maud::{html, Markup, PreEscaped, Render};
 use pulldown_cmark::{html::push_html, Parser};
 use std::{
     error::Error,
-    fs::{self, DirEntry, FileType},
+    fs::{self},
     io,
-    path::{Path, PathBuf},
+    path::Path,
     sync::LazyLock,
 };
 use toml::Table;
 
-mod mastodon_comments;
-mod template;
+mod components;
 
-fn generate_pages() -> Result<Vec<String>, Report> {
-    static REG: LazyLock<Handlebars<'static>> = LazyLock::new(Handlebars::new);
+static REG: LazyLock<Handlebars<'static>> = LazyLock::new(Handlebars::new);
+
+fn main() -> Result<(), Report> {
+    color_eyre::install()?;
+    // lets write some testable code!
+
+    const OUT_DIR: &str = "docs";
+    const PUBLIC_DIR: &str = "public";
+    const CONTENT_DIR: &str = "src/content";
+
+    let md_posts = read_all_files(CONTENT_DIR, "md")?;
+    let html_posts = render_posts_to_html(&md_posts)?;
+    save_html_posts(&html_posts, OUT_DIR)?;
+
+    save_file(
+        &template(index(html_posts)).into_string(),
+        OUT_DIR,
+        "index.html",
+    )?;
+    save_file(&template(about()).into_string(), OUT_DIR, "about.html")?;
+
+    copy_static_content(Path::new(PUBLIC_DIR), Path::new(OUT_DIR))?;
+
+    println!("Built site OK!");
+    Ok(())
+}
+
+fn index(posts: Vec<(String, String)>) -> String {
+    // let links  = posts.iter().map(|(path, content)| {
+
+    // }).collect::<String>();
+    
+    html! {
+        h2 class="slogan" { "/blog" }
+        (format!("temp content posts: {}", posts.len()))
+        // @for (path, ) in rendered.iter() {
+        //     div { (PreEscaped(html)) }
+        // }
+    }
+    .render()
+    .into_string()
+}
+
+fn save_file(content: &str, out_dir: &str, file_name: &str) -> io::Result<()> {
+    let target = Path::new(out_dir).join(file_name);
+    fs::write(&target, content)?;
+    Ok(())
+}
+
+fn read_all_files(path: &str, extension: &str) -> Result<Vec<(String, String)>, std::io::Error> {
     let cwd = std::env::current_dir()?;
 
-    let entries: Vec<_> = fs::read_dir(cwd.join("src/content"))
+    let entries: Vec<_> = fs::read_dir(cwd.join(path))
         .unwrap()
-        // read paths
         .filter_map(|res| {
             res.and_then(|de| {
                 de.file_type().map(|ft| {
-                    (ft.is_file() && de.path().extension().is_some_and(|ext| ext == "md"))
+                    (ft.is_file() && de.path().extension().is_some_and(|ext| ext == extension))
                         .then_some(de)
                 })
             })
@@ -35,98 +82,49 @@ fn generate_pages() -> Result<Vec<String>, Report> {
         })
         .collect::<Result<_, _>>()?;
 
-    let mut file_paths_html = Vec::new();
+    Ok(entries
+        .into_iter()
+        .map(|de| {
+            let path = cwd.join("src/content/").join(de.file_name());
+            (
+                String::from(path.file_name().unwrap().to_str().unwrap()),
+                fs::read_to_string(&path).unwrap(),
+            )
+        })
+        .collect::<Vec<(String, String)>>())
+}
 
-    // read contents
-    for de in entries {
-        let path = cwd.join("src/content/").join(de.file_name());
+fn render_posts_to_html(posts: &[(String, String)]) -> Result<Vec<(String, String)>, RenderError> {
+    let res = posts
+        .iter()
+        .map(|(path, post)| {
+            let (table, content) = get_header(post.to_string());
 
-        let (table, content) = get_header(fs::read_to_string(&path)?);
+            let html = Markdown(&content).render();
+            let out = BlogPost(&html).render(&table);
 
-        let html = Markdown(&content).render();
-        let out = BlogPost(&html).render(&table);
+            let rendered_page = REG.render_template(&out, &table)?;
 
-        let rendered_page = REG.render_template(&out, &table)?;
+            let rendered_page = template(rendered_page).into_string();
 
-        let rendered_page = template(rendered_page).into_string();
+            Ok::<(String, String), Box<dyn Error>>((path.to_owned(), rendered_page))
+        })
+        .filter_map(Result::ok)
+        .collect::<Vec<(String, String)>>();
 
-        let mut target = Path::new("docs").join(path.file_name().unwrap());
+    Ok(res)
+}
 
+fn save_html_posts(posts: &[(String, String)], output_dir: &str) -> io::Result<()> {
+    for (path, page) in posts {
+        let mut target = Path::new(output_dir).join(path);
         target.set_extension("html");
-
-        fs::write(&target, rendered_page)?;
-
-        file_paths_html.push(target.to_str().unwrap().to_string().clone());
+        fs::write(&target, page)?;
     }
-
-    Ok(file_paths_html)
-}
-
-fn main() -> Result<(), Report> {
-    let posts = collect_markdown_posts("src/content")?;
-    let html_posts = render_posts_to_html(&posts)?; // TODO
-    save_html_posts(&html_posts, "docs")?;
-
-    render_index_page(&html_posts, "docs/index.html")?;
-    render_about_page("src/about.md", "docs/about.html")?;
-
-    copy_static_content("public", "docs")?;
-
-    println!("Built site OK!");
     Ok(())
-
-    // generate_pages()
-    // let page_files = generate_pages();
-
-    // let mut files = vec![
-    //     ("docs/about.html", about().into_string()),
-    //     (
-    //         "docs/index.html",
-    //         template(
-    //             html! {
-    //                 "temp content"
-    //             }
-    //             .render()
-    //             .into_string(),
-    //         )
-    //         .into_string(),
-    //     ),
-    // ];
-
-    // for (path, content) in files {
-    //     fs::write(path, content).expect("Failed to write HTML file");
-    // }
-    // copy_dir_all("public", "docs")?;
-    // println!("Built site OK!");
-    // Ok(())
 }
 
-fn collect_markdown_posts(path: &str) -> Result<Vec<String>, Report> {
-    // Implementation later
-    todo!()
-}
-
-fn render_posts_to_html(posts: &[String]) -> Result<Vec<(String, String)>, Report> {
-    // Implementation later
-    todo!()
-}
-
-fn save_html_posts(posts: &[(String, String)], output_dir: &str) -> Result<(), Report> {
-    // Implementation later
-    todo!()
-}
-
-fn render_index_page(posts: &[(String, String)], output_path: &str) -> Result<(), Report> {
-    // Implementation later
-    todo!()
-}
-
-fn render_about_page(input_path: &str, output_path: &str) -> Result<(), Report> {
-    // Implementation later
-    todo!()
-}
-
-fn about() -> Markup {
+fn about() -> String {
     template(
         html! {
             p {
@@ -164,6 +162,8 @@ fn about() -> Markup {
         .render()
         .into_string(),
     )
+    .render()
+    .into_string()
 }
 
 struct Markdown<'a>(&'a str);
@@ -298,120 +298,47 @@ fn blog_preview() -> Markup {
     )
 }
 
-/// Recursively copies static content from a source directory to a destination directory.
-///
-/// This function first creates the destination directory if it does not exist.
-/// Then, it iterates through each entry in the source directory. If an entry is a directory,
-/// the function recursively calls itself to copy the contents of that directory.
-/// If an entry is a file, the function checks if the file should be copied using the
-/// `should_copy_file` function. If `should_copy_file` returns `true`, the file is copied
-/// from the source to the destination.
-///
-/// # Arguments
-///
-/// * `src` - A string slice representing the path to the source directory.
-/// * `dst` - A string slice representing the path to the destination directory.
-///
-/// # Returns
-///
-/// * `Ok(())` if the copy operation was successful.
-/// * `Err(io::Error)` if an error occurred during the copy operation, such as if a directory
-///   cannot be created or read, or if a file cannot be copied.
-///
-/// # Errors
-///
-/// This function can return an `io::Error` if any of the following occur:
-///
-/// * The source directory cannot be read.
-/// * A directory cannot be created.
-/// * A file cannot be copied.
-/// * Metadata of a file cannot be accessed.
-///
-/// # Panics
-///
-/// This function panics if `entry_path.to_str()` or `target_path.to_str()` return `None`.
-/// This can happen if the path contains invalid Unicode.
-/// see: https://stackoverflow.com/a/65192210/26371953
-fn copy_static_content(src: &str, dst: &str) -> io::Result<()> {
-    fs::create_dir_all(dst)?;
+fn generate_pages() -> Result<Vec<String>, Report> {
+    static REG: LazyLock<Handlebars<'static>> = LazyLock::new(Handlebars::new);
+    let cwd = std::env::current_dir()?;
 
-    for entry in fs::read_dir(src)? {
-        let entry = entry?;
-        let entry_path = entry.path();
-        let target_path = Path::new(dst).join(entry.file_name());
+    let entries: Vec<_> = fs::read_dir(cwd.join("src/content"))
+        .unwrap()
+        // read paths
+        .filter_map(|res| {
+            res.and_then(|de| {
+                de.file_type().map(|ft| {
+                    (ft.is_file() && de.path().extension().is_some_and(|ext| ext == "md"))
+                        .then_some(de)
+                })
+            })
+            .transpose()
+        })
+        .collect::<Result<_, _>>()?;
 
-        if entry.file_type()?.is_dir() {
-            copy_static_content(entry_path.to_str().unwrap(), target_path.to_str().unwrap())?;
-        } else if should_copy_file(&entry_path, &target_path)? {
-            fs::copy(&entry_path, &target_path)?;
-        }
+    let mut file_paths_html = Vec::new();
+
+    // read contents
+    for de in entries {
+        let path = cwd.join("src/content/").join(de.file_name());
+
+        let (table, content) = get_header(fs::read_to_string(&path)?);
+
+        let html = Markdown(&content).render();
+        let out = BlogPost(&html).render(&table);
+
+        let rendered_page = REG.render_template(&out, &table)?;
+
+        let rendered_page = template(rendered_page).into_string();
+
+        let mut target = Path::new("docs").join(path.file_name().unwrap());
+
+        target.set_extension("html");
+
+        fs::write(&target, rendered_page)?;
+
+        file_paths_html.push(target.to_str().unwrap().to_string().clone());
     }
-    Ok(())
-}
 
-/// Determines whether a file should be copied based on its modification time.
-///
-/// # Arguments
-///
-/// * `src` - The source file path.
-/// * `dst` - The destination file path.
-///
-/// # Returns
-///
-/// * `Ok(true)` if the file should be copied.
-/// * `Ok(false)` if the file should not be copied.
-/// * `Err(io::Error)` if an I/O error occurs.
-///
-/// # Examples
-///
-/// ```
-/// use std::fs::{self, File};
-/// use std::io::Write;
-/// use std::path::Path;
-/// use std::thread::sleep;
-/// use std::time::Duration;
-///
-/// let src_path = Path::new("src.txt");
-/// let dst_path = Path::new("dst.txt");
-///
-/// // Create a source file
-/// let mut src_file = File::create(&src_path).unwrap();
-/// writeln!(src_file, "Source file content").unwrap();
-///
-/// // Ensure the file system timestamps differ
-/// sleep(Duration::from_secs(2));
-///
-/// // Create a destination file (older)
-/// let mut dst_file = File::create(&dst_path).unwrap();
-/// writeln!(dst_file, "Destination file content").unwrap();
-///
-/// assert!(should_copy_file(&src_path, &dst_path).unwrap());
-///
-/// // Update the destination file to be newer
-/// sleep(Duration::from_secs(2));
-/// fs::write(&dst_path, "Updated destination content").unwrap();
-/// assert!(!should_copy_file(&src_path, &dst_path).unwrap());
-///
-/// // If destination doesn't exist, should copy
-/// fs::remove_file(&dst_path).unwrap();
-/// assert!(should_copy_file(&src_path, &dst_path).unwrap());
-///
-/// // Cleanup
-/// fs::remove_file(&src_path).unwrap();
-/// ```
-fn should_copy_file(src: &Path, dst: &Path) -> io::Result<bool> {
-    match fs::metadata(dst) {
-        Ok(dst_metadata) => {
-            let src_metadata = fs::metadata(src)?;
-            let src_modified = src_metadata.modified()?;
-            let dst_modified = dst_metadata.modified()?;
-
-            // Only copy if source file is newer than destination file
-            Ok(src_modified > dst_modified)
-        }
-        Err(_) => {
-            // Destination file doesn't exist, so we need to copy
-            Ok(true)
-        }
-    }
+    Ok(file_paths_html)
 }

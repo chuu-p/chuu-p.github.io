@@ -28,7 +28,7 @@ and immersion in the activity.
 > Something we can get better and better at, no matter what we’re doing, who we’re 
 > with or what life throws our way.
 
-source: [**Flow Summary – Mihaly Csikszentmihalyi**](https://theartofliving.com/flow-mihaly-csikszentmihalyi/)
+source: [**Flow Summary – Mihaly Csikszentmihalyi**](https://web.archive.org/web/20230209031213/https://theartofliving.com/flow-mihaly-csikszentmihalyi/)
 
 ## reaching flow state
 

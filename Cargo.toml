@@ -4,14 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-color-eyre = "*"
-handlebars = "6.3.1"
-html-node = { version = "0.5.0", features = ["typed"] }
-hypertext = "0.5.1"
-include_dir = { version = "0.7.4", features = ["glob"] }
-lazy-static-include = "3.2.1"
-lazy_static = "1.5.0"
-maud = "0.26.0"
-pulldown-cmark = "0.11.0"
-rstml = "*"
-toml = "0.8.20"
+color-eyre = "*"          # error handling
+handlebars = "6.3.1"      # templating
+maud = "0.26.0"           # html macro
+pulldown-cmark = "0.11.0" # markdown to html
+toml = "0.8.20"           # toml parser
+
+[dev-dependencies]
+filetime = "0.2.25"
+tempfile = "3.18.0"

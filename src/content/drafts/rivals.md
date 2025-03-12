@@ -1,6 +1,11 @@
 +++
-title = "learn how to use enemies"
+title = "the value of good rivals"
 date = 2024-11-14
+
+[extra]
+postid = 114075174358638781
+miku_img = "miku_fight"
+miku_q = "TODO!"
 +++
 
 > [...] hire a former enemy and he will be more loyal than a friend, because he has more to prove. [...] If you have no enemies, find a way to make them.  

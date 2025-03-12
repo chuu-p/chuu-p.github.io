@@ -4,7 +4,7 @@
 
 A static site generator written in rust.
 
-Powered by 
+Powered by
 - [maud](https://github.com/lambda-fairy/maud)
 - [handlebars](https://github.com/sunng87/handlebars-rust)
 - [pulldown-cmark](https://github.com/pulldown-cmark/pulldown-cmark)

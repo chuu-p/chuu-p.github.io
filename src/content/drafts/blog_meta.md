@@ -6,6 +6,8 @@ draft = true
 categories = ["✨", "💡","📚"]
 +++
 
+TODO explain this blog stuff
+
 https://web.archive.org/web/20250210103535/https://andysblog.uk/why-blog-if-nobody-reads-it/
 
 in progress ...
