@@ -3,11 +3,13 @@ use color_eyre::Report;
 
 use crate::components::mastodon_comments::mastodon_comments;
 use crate::components::template::template;
+use core::fmt;
 use handlebars::{Handlebars, RenderError};
 use maud::{html, Markup, PreEscaped, Render};
 use pulldown_cmark::{html::push_html, Parser};
 use std::{
     error::Error,
+    fmt::format,
     fs::{self},
     io,
     path::Path,
@@ -32,11 +34,15 @@ fn main() -> Result<(), Report> {
     save_html_posts(&html_posts, OUT_DIR)?;
 
     save_file(
-        &template(index(html_posts)).into_string(),
+        &template(component_index(html_posts)).into_string(),
         OUT_DIR,
         "index.html",
     )?;
-    save_file(&template(about()).into_string(), OUT_DIR, "about.html")?;
+    save_file(
+        &template(component_about()).into_string(),
+        OUT_DIR,
+        "about.html",
+    )?;
 
     copy_static_content(Path::new(PUBLIC_DIR), Path::new(OUT_DIR))?;
 
@@ -44,17 +50,17 @@ fn main() -> Result<(), Report> {
     Ok(())
 }
 
-fn index(posts: Vec<(String, String)>) -> String {
-    // let links  = posts.iter().map(|(path, content)| {
+fn component_index(posts: Vec<(String, String)>) -> String {
+    let links_contents = posts
+        .into_iter()
+        .map(|(path, content)| (format!("/{}", path), content))
+        .collect::<Vec<(String, String)>>();
 
-    // }).collect::<String>();
-    
     html! {
         h2 class="slogan" { "/blog" }
-        (format!("temp content posts: {}", posts.len()))
-        // @for (path, ) in rendered.iter() {
-        //     div { (PreEscaped(html)) }
-        // }
+        @for (link, content) in links_contents.into_iter() {
+            a href=(link) { (link) }
+        }
     }
     .render()
     .into_string()
@@ -64,6 +70,31 @@ fn save_file(content: &str, out_dir: &str, file_name: &str) -> io::Result<()> {
     let target = Path::new(out_dir).join(file_name);
     fs::write(&target, content)?;
     Ok(())
+}
+
+#[derive(Debug)]
+struct MyError {
+    details: String,
+}
+
+impl MyError {
+    fn new(msg: &str) -> MyError {
+        MyError {
+            details: msg.to_string(),
+        }
+    }
+}
+
+impl fmt::Display for MyError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.details)
+    }
+}
+
+impl Error for MyError {
+    fn description(&self) -> &str {
+        &self.details
+    }
 }
 
 fn read_all_files(path: &str, extension: &str) -> Result<Vec<(String, String)>, std::io::Error> {
@@ -86,11 +117,23 @@ fn read_all_files(path: &str, extension: &str) -> Result<Vec<(String, String)>, 
         .into_iter()
         .map(|de| {
             let path = cwd.join("src/content/").join(de.file_name());
-            (
-                String::from(path.file_name().unwrap().to_str().unwrap()),
-                fs::read_to_string(&path).unwrap(),
-            )
+            let mut html_path = path.clone();
+            html_path.set_extension("html");
+            Ok::<(String, String), Box<dyn Error>>((
+                String::from(
+                    html_path.file_name()
+                        .ok_or_else(|| MyError::new("filname error"))?
+                        .to_str()
+                        .ok_or_else(|| MyError::new("to_str error"))?,
+                ),
+                fs::read_to_string(&path)?,
+            ))
         })
+        .map(|x| {
+            println!("unwrapping {:?}", x);
+            x.unwrap()
+        })
+        // .filter_map(Result::ok)
         .collect::<Vec<(String, String)>>())
 }
 
@@ -124,7 +167,7 @@ fn save_html_posts(posts: &[(String, String)], output_dir: &str) -> io::Result<(
     Ok(())
 }
 
-fn about() -> String {
+fn component_about() -> String {
     template(
         html! {
             p {
@@ -226,119 +269,4 @@ fn get_header(content: String) -> (Table, String) {
     } else {
         (Table::new(), content) // Handle missing start delimiter
     }
-}
-
-fn blog_preview() -> Markup {
-    println!("{:?}", std::env::current_dir());
-
-    let paths = fs::read_dir(std::env::current_dir().unwrap().join("src/content")).unwrap();
-    println!("{:?}", paths);
-
-    let md_paths: Vec<_> = paths
-        .filter_map(Result::ok) // Filter out any Err results from read_dir
-        .filter(|entry| {
-            if let Ok(file_type) = entry.file_type() {
-                file_type.is_file()
-            } else {
-                false
-            }
-        })
-        .filter(|entry| {
-            if let Some(extension) = entry.path().extension() {
-                extension == "md"
-            } else {
-                false
-            }
-        })
-        .collect();
-
-    println!("{:?}", md_paths);
-    let local_contents: Vec<String> = md_paths
-        .into_iter()
-        .map(|x| {
-            println!("{:?}", x);
-            let path = std::env::current_dir()
-                .unwrap()
-                .join("src/content/")
-                .join(x.file_name().into_string().unwrap());
-            // println!("{:?}", path);
-            fs::read_to_string(&path).expect("Unable to read file")
-        })
-        .collect();
-
-    let header_contents: Vec<(Table, String)> =
-        local_contents.into_iter().map(get_header).collect();
-
-    let header_and_rendered_no_template: Vec<(Table, String)> = header_contents
-        .into_iter()
-        .map(|(h, c)| {
-            let html = Markdown(&c).render();
-            let out = BlogPost(&html).render(&h);
-            (h, out.to_string().clone())
-        })
-        .collect();
-
-    // TODO github repo and github pages and github actions ci
-
-    let reg = Handlebars::new();
-
-    let rendered: Vec<String> = header_and_rendered_no_template
-        .into_iter()
-        .map(|(t, c)| reg.render_template(&c, &t))
-        .filter_map(Result::ok) // Filter out any Err results from read_dir
-        .collect();
-
-    html!(
-        h2 class="slogan" { "/blog" }
-        div {
-            @for html in rendered.iter() {
-                div { (PreEscaped(html)) }
-            }
-        }
-    )
-}
-
-fn generate_pages() -> Result<Vec<String>, Report> {
-    static REG: LazyLock<Handlebars<'static>> = LazyLock::new(Handlebars::new);
-    let cwd = std::env::current_dir()?;
-
-    let entries: Vec<_> = fs::read_dir(cwd.join("src/content"))
-        .unwrap()
-        // read paths
-        .filter_map(|res| {
-            res.and_then(|de| {
-                de.file_type().map(|ft| {
-                    (ft.is_file() && de.path().extension().is_some_and(|ext| ext == "md"))
-                        .then_some(de)
-                })
-            })
-            .transpose()
-        })
-        .collect::<Result<_, _>>()?;
-
-    let mut file_paths_html = Vec::new();
-
-    // read contents
-    for de in entries {
-        let path = cwd.join("src/content/").join(de.file_name());
-
-        let (table, content) = get_header(fs::read_to_string(&path)?);
-
-        let html = Markdown(&content).render();
-        let out = BlogPost(&html).render(&table);
-
-        let rendered_page = REG.render_template(&out, &table)?;
-
-        let rendered_page = template(rendered_page).into_string();
-
-        let mut target = Path::new("docs").join(path.file_name().unwrap());
-
-        target.set_extension("html");
-
-        fs::write(&target, rendered_page)?;
-
-        file_paths_html.push(target.to_str().unwrap().to_string().clone());
-    }
-
-    Ok(file_paths_html)
 }

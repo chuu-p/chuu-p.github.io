@@ -1895,4 +1895,626 @@
     style="color:#af7f30;">l</span><span style="color:#b18234;">c</span><span
     style="color:#d9b372;">i</span><span style="color:#cba15c;">;</span><span
     style="color:#ae7e2f;">l</span><br>
-</a></div><nav class="flex items-center justify-between flex-wrap bg-black-500 p-6"><div class="flex items-center flex-shrink-0 text-white mr-6"><a href="/" class="font-semibold text-xl tracking-tight">chuu.dev</a></div><div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto"><div class="text-xl lg:flex-grow"><a href="about.html" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">about</a><a href="https://github.com/chuu-p/chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">github</a><a href="https://mastodon.social/@chuu_p" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">mastodon</a><a href="mailto:j@chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">email</a></div></div></nav><div class="p-6 container mx-auto"><h2 class="slogan">/blog</h2><a href="/GRTTy.html">/GRTTy.html</a></div><br><br><br><br><p class="text-xs">Made with &lt;3 in 2025</p></body></html>
+</a></div><nav class="flex items-center justify-between flex-wrap bg-black-500 p-6"><div class="flex items-center flex-shrink-0 text-white mr-6"><a href="/" class="font-semibold text-xl tracking-tight">chuu.dev</a></div><div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto"><div class="text-xl lg:flex-grow"><a href="about.html" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">about</a><a href="https://github.com/chuu-p/chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">github</a><a href="https://mastodon.social/@chuu_p" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">mastodon</a><a href="mailto:j@chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">email</a></div></div></nav><div class="p-6 container mx-auto"><div style="float:right; max-width: 25%;"><blockquote><p>Hit the GRTTy!</p></blockquote><img style="" src="miku_jump.png"></img></div><blockquote>
+<p><strong>GRTTy Stack: gRPC Rust React Typescript</strong><br />
+2025-02-27</p>
+</blockquote>
+<h2>Stack</h2>
+<ul>
+<li>IDL
+<ul>
+<li><a href="https://grpc.io/">gRPC</a></li>
+</ul>
+</li>
+<li>Backend
+<ul>
+<li><a href="https://www.rust-lang.org/">Rust</a></li>
+<li><a href="https://diesel.rs/">Diesel</a></li>
+<li><a href="https://sqlite.org/">Sqlite</a></li>
+</ul>
+</li>
+<li>Frontend
+<ul>
+<li><a href="https://www.typescriptlang.org/">Typescript</a></li>
+<li><a href="https://react.dev/">React</a></li>
+<li><a href="https://tailwindcss.com/">Tailwind CSS</a></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> You can find the code for a working full stack example repository <a href="https://github.com/chuu-p/GRTTy">here</a> <a href="https://github.com/chuu-p/GRTTy">https://github.com/chuu-p/GRTTy</a></p>
+</blockquote>
+<p>Why did I choose this stack?</p>
+<ul>
+<li>IDL (Interface Definition Language): gRPC</li>
+</ul>
+<p>gRPC offers strong typing, fast performance, and native streaming. Compared to OpenAPI, it’s more efficient for internal
+service communication but slightly more complex to work with in frontend environments.</p>
+<ul>
+<li>Backend: Rust, Diesel, Sqlite</li>
+</ul>
+<p>Rust is my favourite programming laguage. Diesel is my favourite database crate, beacause you write sql queries as rust
+daisychain functions, instead of raw sql, which I like a lot. I chose Sqlite as the database for this example, other
+database systems (PostgreSQL, SQLite, or MySQL) can be used, too.</p>
+<ul>
+<li>Frontend: Typescript, React, Tailwind</li>
+</ul>
+<p>Typescript is less horrible then Javascript, React is the most popular frontend framework, and the one I know best. I
+dont like separate CSS files, insted putting the styling directly inside the react components. In the past I used MUI,
+for this project I chose Tailwind for a more custom look.</p>
+<h2>API-Specification</h2>
+<p>A frontend/backend contract via gRPC is a shared <code>.proto </code> protobuf file that defines all the requests, responses, and
+services (API functions) the frontend and backend use to talk to each other.</p>
+<p>Both sides use this file to generate code, so they always agree on the exact data types and endpoints — ensuring they
+don’t accidentally break the communication.</p>
+<p>It’s like a single source of truth for the API.</p>
+<p>Create the root project directory, cd into it and init git repo.</p>
+<pre><code class="language-sh">mkdir example
+cd example
+git init
+</code></pre>
+<p>Now we create the gRPC <code>.proto</code> api contract and set some environment variables. Both the frontend and backend will use
+both files.</p>
+<p><code>example-spec/example.proto</code></p>
+<pre><code class="language-proto">syntax = "proto3";
+
+package example;
+
+service HealthCheckService {
+  rpc CheckHealth(HealthCheckRequest) returns (HealthCheckReply) {}
+}
+message HealthCheckRequest {}
+message HealthCheckReply {}
+</code></pre>
+<p><code>example-spec/.env</code></p>
+<pre><code class="language-txt">VITE_GRPC_SERVER_ADDRESS=127.0.0.1
+VITE_GRPC_SERVER_PORT=50051
+VITE_FRONTEND_ADDRESS=127.0.0.1
+VITE_FRONTEND_PORT=5173
+DATABASE_URL=example.db
+</code></pre>
+<h2>Frontend</h2>
+<p>I use pnpm as a package manager, but u can use npm, pnpm, yarn, bun, or whatever you like.</p>
+<p>On naming:</p>
+<ul>
+<li>project root: <code>example</code>
+<ul>
+<li>frontend: <code>example</code></li>
+<li>backend: <code>example-api</code></li>
+<li>interface definition: <code>example-spec</code></li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-sh"># 1. create the frontend project
+pnpm create vite example --template react-ts
+cd example
+
+# 2. add tailwind
+pnpm install tailwindcss @tailwindcss/vite
+pnpm approve-builds # press: a -&gt; enter
+</code></pre>
+<p><code>example/vite.config.ts</code></p>
+<pre><code class="language-ts">import path from "path";
+import {defineConfig} from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  envDir: path.resolve(__dirname, "../example-spec"),
+});
+</code></pre>
+<p>add protobuf codegen and generate the typescript gRPC server and gRPC client code from the gRPC spec:</p>
+<pre><code class="language-sh">cd example
+
+#  protobuf codegen &amp; runtime
+pnpm install -g protoc-gen-ts
+pnpm add @protobuf-ts/plugin @protobuf-ts/grpcweb-transport @protobuf-ts/runtime @protobuf-ts/runtime-rpc google-protobuf @grpc/grpc-js
+
+# generate the typescript gRPC server and gRPC client code
+mkdir src/protobuf-ts-gen
+npx protoc -I=../example-spec/ example.proto --ts_out=./src/protobuf-ts-gen
+</code></pre>
+<p>you need to run the <code>npx protoc</code> command every time you change the <code>example.proto</code> spec.</p>
+<p>now we add the "health check backend" functionality to frontend.</p>
+<p>delete <code>example/src/App.css</code></p>
+<p><code>example/src/App.tsx</code></p>
+<pre><code class="language-tsx">import {useState} from "react";
+import {GrpcWebFetchTransport} from "@protobuf-ts/grpcweb-transport";
+import {HealthCheckServiceClient} from "./protobuf-ts-gen/example.client";
+import {
+  HealthCheckRequest,
+  HealthCheckReply,
+} from "./protobuf-ts-gen/example";
+
+const BACKEND_URL = `http://${import.meta.env.VITE_GRPC_SERVER_ADDRESS}:${import.meta.env.VITE_GRPC_SERVER_PORT}`;
+
+const transport = new GrpcWebFetchTransport({
+  baseUrl: BACKEND_URL,
+});
+const echoClient = new HealthCheckServiceClient(transport);
+
+export default function HealthCheck() {
+  const [outputValue, setOutValue] = useState(
+    "Click 'Check Health!' to trigger a health check",
+  );
+
+  const handleSubmit = async () =&gt; {
+    console.log(`Sending Request to ${BACKEND_URL}`);
+    echoClient
+      .checkHealth(HealthCheckRequest.create({}))
+      .then((res) =&gt; setOutValue(`Success! ${res}`))
+      .catch((e) =&gt; setOutValue(`Error! ${e}`));
+  };
+
+  return (
+    &lt;&gt;
+      &lt;div className="max-w-2xl p-8 text-center"&gt;
+        &lt;h1 className="text-3xl font-bold underline"&gt;Hello world!&lt;/h1&gt;
+        &lt;button className="border p-1 rounded shadow" onClick={handleSubmit}&gt;
+          Check Health!
+        &lt;/button&gt;
+        &lt;p&gt;{outputValue}&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/&gt;
+  );
+}
+</code></pre>
+<pre><code class="language-sh">cd example
+pnpm run dev
+# Now press "Check Health!"
+# -&gt; Error! RpcError: NetworkError when attempting to fetch resource. Code: INTERNAL Method: example.HealthCheckService/CheckHealth
+</code></pre>
+<p>There is no backend / gRPC server yet!</p>
+<h2>Backend</h2>
+<p>We will create a rust project for the the gRPC Server.</p>
+<pre><code class="language-sh">cd ..
+cargo new example-api
+cd example-api
+cargo add --build tonic-build
+</code></pre>
+<p><code>example-api/cargo.toml</code></p>
+<pre><code class="language-toml">[package]
+name = "example-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+prost = "0.13"
+tower-layer = "0.3.3"
+http = "1"
+hyper = "1"
+hyper-util = "0.1.4"
+bytes = "1"
+tracing = "0.1.16"
+tokio = { version = "1.43.0", features = ["full"] }
+tokio-stream = { version = "0.1.17", features = ["full"] }
+tonic = "0.12.3"
+tonic-web = "0.12.3"
+tower = "0.5.2"
+tower-http = { version = "0.6.2", features = [
+  "cors",
+  "compression-full",
+  "fs",
+] }
+dotenvy = "0.15.7"
+prost-types = "0.13.5"
+log = "0.4.26"
+
+[build-dependencies]
+tonic-build = "*"
+
+[dev-dependencies]
+tokio-stream = { version = "0.1.17", features = ["net"] }
+</code></pre>
+<p><code>example-api/.gitignore</code></p>
+<pre><code>/target
+*.db
+</code></pre>
+<p><code>example-api/build.rs</code></p>
+<pre><code class="language-rust">fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    tonic_build::compile_protos("../example-spec/example.proto")?;
+    Ok(())
+}
+</code></pre>
+<p><code>example-api/src/main.rs</code></p>
+<pre><code class="language-rust">use std::env;
+use std::path::Path;
+use std::time::Duration;
+use tokio::net::TcpListener;
+use tonic::{transport::Server, Request, Response, Status};
+use tower_http::cors::{Any, CorsLayer};
+
+use openfg::health_check_service_server::{HealthCheckService, HealthCheckServiceServer};
+use openfg::{HealthCheckReply, HealthCheckRequest};
+
+pub mod openfg {
+    tonic::include_proto!("example");
+}
+
+#[derive(Default)]
+pub struct HealthCheck {}
+
+#[tonic::async_trait]
+impl HealthCheckService for HealthCheck {
+    async fn check_health(
+        &amp;self,
+        request: Request&lt;HealthCheckRequest&gt;,
+    ) -&gt; Result&lt;Response&lt;HealthCheckReply&gt;, Status&gt; {
+        println!("Got a request from {:?}", request.remote_addr());
+        let reply = openfg::HealthCheckReply {};
+        Ok(Response::new(reply))
+    }
+}
+
+pub async fn serve(listener: TcpListener) -&gt; Result&lt;(), tonic::transport::Error&gt; {
+    Server::builder()
+        .accept_http1(true)
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_headers(Any)
+                .allow_methods(Any)
+                .max_age(Duration::from_secs(60) * 30),
+        )
+        .layer(tonic_web::GrpcWebLayer::new())
+        .add_service(HealthCheckServiceServer::new(HealthCheck::default()))
+        .serve_with_incoming(tokio_stream::wrappers::TcpListenerStream::new(listener))
+        .await
+}
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    dotenvy::from_path(Path::new("../example-spec/.env"))?;
+    let server_addr = env::var("VITE_GRPC_SERVER_ADDRESS")?;
+    let server_port = env::var("VITE_GRPC_SERVER_PORT")?;
+    println!("server starting");
+    let listener =
+        tokio::net::TcpListener::bind(format!("{}:{}", server_addr, server_port)).await?;
+
+    tokio::spawn(async { serve(listener).await });
+    println!("server started");
+
+    println!("Waiting now.");
+    let mut buffer = String::new();
+    std::io::stdin().read_line(&amp;mut buffer)?;
+
+    Ok(())
+}
+</code></pre>
+<p>Starting the server:</p>
+<pre><code class="language-sh">cd example-api
+cargo run
+...
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 19.35s
+     Running `target/debug/example-api`
+server starting
+server started
+Waiting now.
+</code></pre>
+<p>We can check the server works by running this command in a separate terminal:
+<code>grpcurl -plaintext -import-path ./example-spec/ -proto example.proto '127.0.0.1:50051' example.HealthCheckService/CheckHealth</code></p>
+<pre><code class="language-sh">grpcurl -plaintext -import-path ./example-spec/ -proto example.proto '127.0.0.1:50051' example.HealthCheckService/CheckHealth
+{}
+</code></pre>
+<p>If we check the frontend and press 'Check Health!' -&gt; Success! [object Object]</p>
+<p>In the server terminal: <code>Got a request from Some(127.0.0.1:47140)</code></p>
+<p>It Works!</p>
+<h3>Database</h3>
+<p>A fullstack ususally includes a database. For this project I chose Sqlite, since this is a minimal example and it is the
+best choice for the real project I am developing, which inspired the GRTTy Stack.</p>
+<p><code>example-api/cargo.toml</code></p>
+<pre><code class="language-toml">[dependencies]
+...
+chrono = { version = "0.4.39", features = ["serde"] }
+diesel = { version = "2.2.7", features = [
+  "chrono",
+  "returning_clauses_for_sqlite_3_35",
+  "sqlite",
+] }
+diesel_migrations = { version = "2.2.0", features = ["sqlite"] }
+</code></pre>
+<pre><code class="language-sh">$ diesel setup
+$ diesel migration generate create_health_checks
+</code></pre>
+<p><code>example-api/migrations/.../up.sql</code></p>
+<pre><code class="language-sql">CREATE TABLE
+    health_checks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        timestamp DATETIME NOT NULL
+    );
+</code></pre>
+<p><code>example-api/migrations/.../down.sql</code></p>
+<pre><code class="language-sql">DROP TABLE health_checks;
+</code></pre>
+<p>Run the migration.</p>
+<pre><code class="language-sh">$ diesel migration run
+</code></pre>
+<p><code>example-api/src/models.rs</code></p>
+<pre><code class="language-rust">use chrono::NaiveDateTime;
+use diesel::{prelude::*, sqlite::Sqlite};
+
+use crate::schema::health_checks;
+
+#[derive(Queryable, Selectable, Debug, Clone, Copy)]
+#[diesel(table_name = health_checks)]
+#[diesel(check_for_backend(Sqlite))]
+pub struct HealthCheck {
+    pub id: i32,
+    pub timestamp: NaiveDateTime
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = health_checks)]
+pub struct NewHealthCheck {
+    pub timestamp: NaiveDateTime
+}
+</code></pre>
+<p><code>example-api/src/schema.rs</code></p>
+<pre><code class="language-rust">// @generated automatically by Diesel CLI.
+
+diesel::table! {
+    health_checks (id) {
+        id -&gt; Integer,
+        timestamp -&gt; Timestamp,
+    }
+}
+</code></pre>
+<p><code>example-api/src/main.rs</code></p>
+<pre><code class="language-rust">use crate::models::NewHealthCheck;
+use chrono::Utc;
+use diesel::prelude::*;
+use diesel::{Connection, SqliteConnection};
+...
+pub mod models;
+pub mod schema;
+
+pub fn establish_connection() -&gt; SqliteConnection {
+    dotenv().ok();
+
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    println!("Connecting to {}", database_url);
+    SqliteConnection::establish(&amp;database_url)
+        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
+}
+...
+#[tonic::async_trait]
+impl HealthCheckService for HealthCheck {
+    async fn check_health(
+        &amp;self,
+        request: Request&lt;HealthCheckRequest&gt;,
+    ) -&gt; Result&lt;Response&lt;HealthCheckReply&gt;, Status&gt; {
+        println!("Got a request from {:?}", request.remote_addr());
+
+        let mut connection = establish_connection();
+        let record = NewHealthCheck {
+            timestamp: Utc::now().naive_utc(),
+        };
+
+        let expected_records = diesel::insert_into(health_checks::table)
+            .values(&amp;record)
+            .execute(&amp;mut connection)
+            .unwrap();
+
+        debug_assert_eq!(1, expected_records);
+
+        let reply = openfg::HealthCheckReply {};
+        Ok(Response::new(reply))
+    }
+}
+...
+</code></pre>
+<p>Now we start the server, press the button in the frontend, and check for a new entry in the database.</p>
+<pre><code class="language-sh">$ cargo run
+...
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 13.72s
+     Running `target/debug/example-api`
+server starting
+server started
+Waiting now.
+Got a request from Some(127.0.0.1:52352)
+Connecting to openfg.db
+^C
+
+# check if the entry was written in the db
+$ sqlite3 openfg.db "SELECT * from health_checks;"
+1|2025-03-02 00:28:04.312533388
+</code></pre>
+<h2>Tests</h2>
+<h3>Backend</h3>
+<pre><code class="language-sh">$ mkdir example-api/tests
+</code></pre>
+<p><code>example-api/tests/health_check.rs</code></p>
+<pre><code class="language-rust">use diesel::prelude::*;
+use example::health_check_service_client::HealthCheckServiceClient;
+use example::HealthCheckRequest;
+use example_api::schema::health_checks;
+use example_api::{establish_connection, serve};
+use std::env;
+use std::path::Path;
+
+pub mod example {
+    tonic::include_proto!("example");
+}
+
+#[tokio::test]
+async fn health_check_works() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    // arrange
+    dotenvy::from_path(Path::new("../example-spec/.env"))?;
+
+    let server_addr = env::var("VITE_GRPC_SERVER_ADDRESS")?;
+    let server_port = env::var("VITE_GRPC_SERVER_PORT")?;
+
+    println!("server starting");
+    let listener =
+        tokio::net::TcpListener::bind(format!("{}:{}", server_addr, server_port)).await?;
+    tokio::spawn(async { serve(listener).await });
+    println!("server started");
+
+    // empty database
+    let mut connection = establish_connection();
+
+    diesel::delete(health_checks::table).execute(&amp;mut connection)?;
+    assert_eq!(
+        Ok(0),
+        health_checks::table.count().first::&lt;i64&gt;(&amp;mut connection)
+    );
+
+    let client_addr = format!("http://{}:{}", server_addr, server_port);
+    println!("client starting on: {:?}", client_addr);
+    let mut client = HealthCheckServiceClient::connect(client_addr).await?;
+    println!("client connected");
+
+    let request = tonic::Request::new(HealthCheckRequest {});
+
+    // act
+    let response = client.check_health(request).await?;
+
+    // assert
+    println!("RESPONSE={:?}", response);
+
+    // check response status
+    let status = response
+        .metadata()
+        .get("grpc-status")
+        .unwrap()
+        .to_str()
+        .unwrap();
+    assert_eq!("0", status);
+
+    // check database entry
+    let rows = health_checks::dsl::health_checks
+        .count()
+        .get_result::&lt;i64&gt;(&amp;mut connection)
+        .unwrap();
+    assert_eq!(1, rows);
+
+    // let id = health_checks::dsl::health_checks
+    //     .select(health_checks::id)
+    //     .first(&amp;mut connection);
+
+    Ok(())
+}
+</code></pre>
+<h3>Frontend</h3>
+<p>I will get to this soon ^^</p>
+<p>TODO unwraps -&gt; nice errror handling!</p>
+<p><code>example/src/App.test.ts</code></p>
+<pre><code class="language-ts">import { expect, test } from 'vitest'
+
+test('adds 1 + 2 to equal 3', () =&gt; {
+  expect(1 + 2).toBe(3)
+})
+</code></pre>
+<h2>Sources</h2>
+<ul>
+<li><a href="https://github.com/LukeMathWalker/zero-to-production">Zero To Production In Rust</a></li>
+<li>examples from <a href="https://github.com/timostamm/protobuf-ts">protobuf-ts</a></li>
+<li>examples from <a href="https://github.com/tokio-rs/prost">tokio-rs/prost</a></li>
+<li><a href="https://github.com/hyperium/tonic/blob/master/examples/helloworld-tutorial.md">Tonic Getting Started</a></li>
+</ul>
+<h2>Misc</h2>
+<p>I use <a href="https://github.com/casey/just">just</a> to save and run project-specific commands. This is the justfile:</p>
+<p><code>justfile</code></p>
+<pre><code class="language-yaml">set shell := ["fish", "-c"]
+
+fdev:
+  cd example &amp;&amp; pnpm run dev
+
+fgen:
+  cd example &amp;&amp; pnpm dlx protoc -I=../example-spec/ example.proto --ts_out=./src/protobuf-ts-gen
+
+bdev:
+  cd example-api &amp;&amp; cargo watch -x run
+
+btest:
+  grpcurl -plaintext -import-path ./example-spec/ -proto example.proto '127.0.0.1:50051' example.HealthCheckService/CheckHealth
+
+ci: test fmt clippy # audit # coverage
+
+audit:
+  cd example &amp;&amp; pnpm audit
+  cd example-api &amp;&amp; cargo deny check advisories
+
+test:
+  cd example &amp;&amp; pnpm test run
+  cd example-api &amp;&amp; cargo test --all-features
+
+fmt:
+  cd example &amp;&amp; pnpm prettier --check .
+  cd example-api &amp;&amp; cargo fmt --all -- --check
+
+clippy:
+  cd example &amp;&amp; pnpm eslint --max-warnings=0
+  cd example-api &amp;&amp; cargo clippy -- -D warnings
+
+coverage:
+  cd example &amp;&amp; pnpm test -- --coverage
+  cd example-api &amp;&amp; cargo tarpaulin --ignore-tests
+
+unused:
+  cd example &amp;&amp; pnpm prune
+  cd example-api &amp;&amp; cargo +nightly udeps --workspace
+
+outdated:
+  cd example &amp;&amp; pnpm outdated
+  cd example-api &amp;&amp; cargo outdated --root-deps-only --workspace
+
+migrate:
+  cd example &amp;&amp; npx protoc -I=../example-spec/ example.proto --ts_out=./src/protobuf-ts-gen
+  cd example-api &amp;&amp; diesel migration redo --all
+
+fmtwrite:
+  cd example &amp;&amp; pnpm prettier --write .
+  cd example-api &amp;&amp; cargo fmt --all
+</code></pre>
+<script type="text/javascript">async function load_comments(postid) {
+    console.log("LOAD COMMENTS, ID: " + postid)
+    const url = `https://mastodon.social/api/v1/statuses/${postid}/context`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        populate_comments(json);
+
+    } catch (error) {
+        alert(`Error loading comments: ${error.message}`);
+        console.error(error.message);
+    }
+}
+
+function populate_comments(data) {
+    const commentsView = document.getElementById("comments-view");
+    if (!commentsView) {
+        console.error("comments-view element not found");
+        return;
+    }
+    commentsView.innerHTML = "";
+    if (data && data.descendants && data.descendants.length > 0) {
+        data.descendants.forEach(comment => {
+            const commentDiv = document.createElement("div");
+            commentDiv.classList.add("comment");
+            const avatar = document.createElement("img");
+            avatar.src = comment.account.avatar;
+            avatar.alt = comment.account.display_name + " avatar";
+            avatar.classList.add("comment-avatar");
+            commentDiv.appendChild(avatar);
+            const contentDiv = document.createElement("div");
+            contentDiv.classList.add("comment-content");
+            contentDiv.innerHTML = comment.content;
+            commentDiv.appendChild(contentDiv);
+            const authorName = document.createElement("div");
+            authorName.classList.add("comment-author");
+            authorName.textContent = comment.account.display_name;
+            contentDiv.prepend(authorName);
+            commentsView.appendChild(commentDiv);
+        });
+    } else {
+        const noComments = document.createElement("p");
+        noComments.textContent = "No comments yet.";
+        commentsView.appendChild(noComments);
+    }
+}</script><button onclick="load_comments('114075174358638781')">LOAD</button><a id="comments-view">View</a></div><br><br><br><br><p class="text-xs">Made with &lt;3 in 2025</p></body></html>
