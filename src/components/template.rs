@@ -25,6 +25,7 @@ pub fn template(inner: String) -> Markup {
             script src="https://cdn.tailwindcss.com" {}
             link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Emoji|Space+Mono|Space+Grotesk|VT323";
             script src="tw.js" {}
+            script src="sorttable.js" {}
 
             script {
                 (PreEscaped(r#"
@@ -57,7 +58,6 @@ pub fn template(inner: String) -> Markup {
             style type="text/tailwindcss" {
                 (PreEscaped("code:not([class]) { color: #86cecb; }"))
             }
-            // link rel="stylesheet" href="styles/github-dark.css";
             link rel="stylesheet" href="styles/ir-black.min.css";
 
             script { "hljs.highlightAll();" }

@@ -1,9 +1,10 @@
 +++
 title = "GRTTy Stack: gRPC Rust React Typescript"
-date = "2025-02-27"
+date = 2025-02-27
+category = "rust"
 
 [extra]
-postid = 114075174358638781
+postid = "114075174358638781"
 miku_img = "miku_jump"
 miku_q = "Hit the GRTTy!"
 +++

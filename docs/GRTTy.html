@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><link rel="icon" href="favicon.ico"><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Emoji|Space+Mono|Space+Grotesk|VT323"><script src="tw.js"></script><script>
+<!DOCTYPE html><html lang="en"><head><link rel="icon" href="favicon.ico"><script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Emoji|Space+Mono|Space+Grotesk|VT323"><script src="tw.js"></script><script src="sorttable.js"></script><script>
                     tailwind.config = {
                         theme: {
                             container: {
@@ -1897,7 +1897,7 @@
     style="color:#ae7e2f;">l</span><br>
 </a></div><nav class="flex items-center justify-between flex-wrap bg-black-500 p-6"><div class="flex items-center flex-shrink-0 text-white mr-6"><a href="/" class="font-semibold text-xl tracking-tight">chuu.dev</a></div><div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto"><div class="text-xl lg:flex-grow"><a href="about.html" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">about</a><a href="https://github.com/chuu-p/chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">github</a><a href="https://mastodon.social/@chuu_p" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">mastodon</a><a href="mailto:j@chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">email</a></div></div></nav><div class="p-6 container mx-auto"><div style="float:right; max-width: 25%;"><blockquote><p>Hit the GRTTy!</p></blockquote><img style="" src="miku_jump.png"></img></div><blockquote>
 <p><strong>GRTTy Stack: gRPC Rust React Typescript</strong><br />
-2025-02-27</p>
+[object]</p>
 </blockquote>
 <h2>Stack</h2>
 <ul>
@@ -2492,29 +2492,43 @@ function populate_comments(data) {
         console.error("comments-view element not found");
         return;
     }
+
     commentsView.innerHTML = "";
-    if (data && data.descendants && data.descendants.length > 0) {
+
+    if (data?.descendants?.length > 0) {
         data.descendants.forEach(comment => {
             const commentDiv = document.createElement("div");
-            commentDiv.classList.add("comment");
+            commentDiv.className = "flex items-start space-x-4 p-4 border-full border-gray-800";
+
             const avatar = document.createElement("img");
             avatar.src = comment.account.avatar;
-            avatar.alt = comment.account.display_name + " avatar";
-            avatar.classList.add("comment-avatar");
+            avatar.alt = `${comment.account.display_name} avatar`;
+            avatar.className = "w-10 h-10 rounded-full";
             commentDiv.appendChild(avatar);
+
             const contentDiv = document.createElement("div");
-            contentDiv.classList.add("comment-content");
-            contentDiv.innerHTML = comment.content;
-            commentDiv.appendChild(contentDiv);
-            const authorName = document.createElement("div");
-            authorName.classList.add("comment-author");
+            contentDiv.className = "flex-1";
+
+            const authorName = document.createElement("a");
+            authorName.className = "font-semibold";
             authorName.textContent = comment.account.display_name;
-            contentDiv.prepend(authorName);
+            authorName.href = comment.account.url;
+
+            const commentText = document.createElement("a");
+            commentText.className = "mt-1";
+            commentText.innerHTML = comment.content;
+            commentText.href = comment.url;
+
+            contentDiv.appendChild(authorName);
+            contentDiv.appendChild(commentText);
+            commentDiv.appendChild(contentDiv);
+
             commentsView.appendChild(commentDiv);
         });
     } else {
         const noComments = document.createElement("p");
+        noComments.className = "p-4 text-center";
         noComments.textContent = "No comments yet.";
         commentsView.appendChild(noComments);
     }
-}</script><button onclick="load_comments('114075174358638781')">LOAD</button><a id="comments-view">View</a></div><br><br><br><br><p class="text-xs">Made with &lt;3 in 2025</p></body></html>
+}</script><button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="load_comments('114075174358638781')">Load Mastodon Comments</button><div id="comments-view"></div></div><br><br><br><br><p class="text-xs">Made with &lt;3 in 2025</p></body></html>

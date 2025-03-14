@@ -1,19 +1,221 @@
 use color_eyre::Report;
-
-use handlebars::Handlebars;
-use maud::{html, Markup, PreEscaped, Render, DOCTYPE};
-use pulldown_cmark::{html::push_html, Parser};
+use components::blog_post::blog_post;
+use log::debug;
 use std::{
-    error::Error,
-    fs::{self, DirEntry, FileType},
+    fs::{self, DirEntry},
     io::{self, ErrorKind},
-    path::{Path, PathBuf},
-    sync::LazyLock,
+    path::Path,
 };
-use toml::Table;
+use serde::{Deserialize, Serialize};
+use toml::value::Date;
+
+pub mod components;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BlogPostConfig {
+    pub title: String,
+    pub date: Date,
+    pub extra: BlogPostConfigExtra
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+
+pub struct BlogPostConfigExtra {
+    pub postid: String,
+    pub miku_img: String,
+    pub miku_q: String
+}
+
+/// Saves the given content to a file in the specified output directory.
+///
+/// # Examples
+///
+/// Successful write:
+/// ```
+/// use std::fs;
+/// use tempfile::tempdir;
+/// use blog::save_file;
+/// 
+/// const FILE_NAME: &str = "example.txt";
+/// const CONTENT: &str = "Hello, world!";
+///
+/// let dir = tempdir().unwrap();
+/// let file_path = dir.path().join(FILE_NAME);
+///
+/// println!("file_path {:?}", &file_path);
+/// println!("save_file {:?} {:?} {:?}", &CONTENT, &dir.path(), &FILE_NAME);
+/// save_file(CONTENT, dir.path(), FILE_NAME).unwrap();
+///
+/// let content = fs::read_to_string(&file_path).unwrap();
+/// assert_eq!(content, CONTENT);
+/// ```
+///
+/// Directory does not exist:
+/// ```
+/// use blog::save_file;
+/// use std::path::Path;
+/// 
+/// let result = save_file("Hello!", Path::new("/non/existent/dir"), "file.txt");
+/// assert!(result.is_err());
+/// ```
+///
+/// Invalid file name:
+/// ```
+/// #[cfg(target_os = "windows")]
+/// {
+///     let result = save_file("Hello!", "C:\\", "<invalid:name>");
+///     assert!(result.is_err());
+/// }
+/// ```
+pub fn save_file(content: &str, out_dir: &Path, file_name: &str) -> io::Result<()> {
+    let target = out_dir.join(file_name);
+    println!("write {:?}", &target);
+    fs::write(&target, content)?;
+    Ok(())
+}
+
+/// Reads all files with the given extension from the specified path.
+///
+/// # Examples
+///
+/// Successful read:
+/// ```
+/// use std::fs;
+/// use tempfile::tempdir;
+/// use blog::read_all_files;
+/// use color_eyre::{eyre::OptionExt, Report};
+/// 
+/// let dir = tempdir().unwrap();
+/// fs::write(dir.path().join("file1.txt"), "Content 1").unwrap();
+/// fs::write(dir.path().join("file2.txt"), "Content 2").unwrap();
+/// 
+/// let t = dir.path();
+/// let files = read_all_files(t, "txt");
+/// let files = files.unwrap();
+/// 
+/// assert_eq!(files.len(), 2);
+/// assert!(files.iter().any(|(name, content)| name == "file1.html" && content == "Content 1"));
+/// assert!(files.iter().any(|(name, content)| name == "file2.html" && content == "Content 2"));
+/// ```
+/// 
+/// No matching files:
+/// ```
+/// use tempfile::tempdir;
+/// use blog::read_all_files;
+/// 
+/// let binding = tempdir().unwrap();
+/// let dir = binding.path();
+/// let files = read_all_files(dir, "md").unwrap();
+/// assert!(files.is_empty());
+/// ```
+///
+/// Invalid path:
+/// ```
+/// use blog::read_all_files;
+/// use std::path::Path;
+/// 
+/// let result = read_all_files(Path::new("/non/existent/path"), "txt");
+/// assert!(result.is_err());
+/// ```
+pub fn read_all_files(path: &Path, extension: &str) -> io::Result<Vec<(String, String)>> {
+    let entries = fs::read_dir(path)?
+        .filter_map(|res| {
+            let de = res.ok()?;
+            let ft = &de.file_type().ok()?;
+            if ft.is_file() && de.path().extension().is_some_and(|ext| ext == extension) {
+                Some(Ok::<std::fs::DirEntry, io::Error>(de))
+            } else {
+                None
+            }
+        })
+        .collect::<Result<Vec<DirEntry>, io::Error>>()?;
+    
+    debug!("{:?}", &entries);
+
+    let res = entries
+        .into_iter()
+        .map(|de| {
+            let path = path.join(de.file_name());
+            let mut html_path = path.clone();
+            html_path.set_extension("html");
+
+            let file_name = html_path
+                .file_name()
+                .ok_or_else(|| io::Error::new(ErrorKind::Other, "filename error"))?
+                .to_str()
+                .ok_or_else(|| io::Error::new(ErrorKind::Other, "to_str error"))?
+                .to_string();
+
+            let content = fs::read_to_string(&path)?;
+
+            Ok((file_name, content))
+        })
+        .collect::<Result<Vec<(String, String)>, _>>();
+
+    debug!("{:?}", &res);
+
+    res
+}
+
+pub fn render_posts_to_html(
+    posts: &[(String, String)],
+) -> Result<Vec<(String, BlogPostConfig, String)>, Report> {
+    let res = posts
+        .iter()
+        .map(|(path, post)| {
+            let (table, rendered_page) = blog_post(post.to_string())?;
+            Ok::<(String, BlogPostConfig, String), Report>((path.to_owned(), table, rendered_page))
+        })
+        .collect::<Result<Vec<(String, BlogPostConfig, String)>, Report>>();
+
+    res
+}
+
+/// Saves provided HTML content as `.html` files in the specified output directory.
+///
+/// Each tuple in `posts` contains a file path (String), a mock `Table` config, 
+/// and the page content as a string. The path will have its extension changed to `.html`.
+///
+/// # Errors
+/// Returns an `io::Result` error if file writing fails.
+///
+/// # Examples
+/// ```
+/// use std::collections::HashMap;
+/// use tempfile::tempdir;
+/// use std::fs;
+/// use toml::Table;
+/// 
+/// use blog::save_html_posts;
+/// 
+/// let posts = vec![ 
+///     ("post1".to_string(), Table::new(), "<h1>Post 1</h1>".to_string()),
+///     ("folder/post2".to_string(), Table::new(), "<h1>Post 2</h1>".to_string()),
+/// ];
+///
+/// let output_dir = tempdir().unwrap();
+/// save_html_posts(&posts, output_dir.path()).unwrap();
+///
+/// assert_eq!(
+///     fs::read_to_string(output_dir.path().join("post1.html")).unwrap(),
+///     "<h1>Post 1</h1>"
+/// );
+/// assert_eq!(
+///     fs::read_to_string(output_dir.path().join("folder/post2.html")).unwrap(),
+///     "<h1>Post 2</h1>"
+/// );
+/// ```
+pub fn save_html_posts(posts: &[(String, BlogPostConfig, String)], output_dir: &Path) -> io::Result<()> {
+    for (path, _config, page) in posts {
+        let mut target = Path::new(output_dir).join(path);
+        target.set_extension("html");
+        fs::write(&target, page)?;
+    }
+    Ok(())
+}
 
 /// Copies the contents of `src` to `dst`, recursively.
-/// 
+///
 /// # Examples
 ///
 /// ## Basic Copy
@@ -21,13 +223,14 @@ use toml::Table;
 /// use std::fs::{self, File};
 /// use std::path::Path;
 /// use tempfile::tempdir;
-/// 
+/// use blog::copy_static_content;
+///
 /// let src_dir = tempdir().unwrap();
 /// let dst_dir = tempdir().unwrap();
-/// 
+///
 /// let src_file = src_dir.path().join("example.txt");
 /// let dst_file = dst_dir.path().join("example.txt");
-/// 
+///
 /// File::create(&src_file).unwrap();
 /// copy_static_content(src_dir.path(), dst_dir.path()).unwrap();
 ///
@@ -38,6 +241,7 @@ use toml::Table;
 /// ```
 /// use std::fs::{self, File};
 /// use tempfile::tempdir;
+/// use blog::copy_static_content;
 ///
 /// let src_dir = tempdir().unwrap();
 /// let nested_dir = src_dir.path().join("nested");
@@ -58,6 +262,7 @@ use toml::Table;
 /// use std::io::Write;
 /// use tempfile::tempdir;
 /// use std::time::{SystemTime, Duration};
+/// use blog::copy_static_content;
 ///
 /// let src_dir = tempdir().unwrap();
 /// let dst_dir = tempdir().unwrap();
@@ -67,11 +272,11 @@ use toml::Table;
 ///
 /// let mut file = File::create(&src_file).unwrap();
 /// writeln!(file, "Original content").unwrap();
-/// 
+///
 /// File::create(&dst_file).unwrap().set_modified(SystemTime::now() + Duration::from_secs(3600)).unwrap();
 ///
 /// copy_static_content(src_dir.path(), dst_dir.path()).unwrap();
-/// 
+///
 /// // The original file should *not* overwrite the newer file
 /// assert!(fs::read_to_string(dst_file).unwrap().is_empty());
 /// ```
