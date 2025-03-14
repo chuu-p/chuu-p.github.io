@@ -1,5 +1,5 @@
 use color_eyre::Report;
-use maud::{html, Render};
+use maud::html;
 
 use crate::BlogPostConfig;
 
@@ -28,7 +28,7 @@ pub fn index(posts: Vec<(String, BlogPostConfig, String)>) -> Result<String, Rep
                             div { "blog" }
                         }
                         td class="border-none" {
-                            div { (config.date) }
+                            div { (config.date.to_string()) }
                         }
                         td class="border-none" {
                             a href=(link) { (config.title) }
@@ -38,6 +38,5 @@ pub fn index(posts: Vec<(String, BlogPostConfig, String)>) -> Result<String, Rep
             }
         }
     }
-    .render()
     .into_string())
 }

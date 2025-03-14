@@ -5,8 +5,6 @@ use handlebars::{Handlebars, RenderError};
 use log::debug;
 use maud::html;
 use pulldown_cmark::{html::push_html, Parser};
-use serde::{Deserialize, Serialize};
-use toml::value::Date;
 
 use crate::BlogPostConfig;
 
@@ -30,9 +28,13 @@ fn get_header(content: String) -> Result<(BlogPostConfig, String), Report> {
     let start_delimiter = "+++";
     let end_delimiter = "+++";
 
-    let start_index = content.find(start_delimiter).ok_or_eyre(format!("start delimiter {} not found", &start_delimiter))?;
+    let start_index = content
+        .find(start_delimiter)
+        .ok_or_eyre(format!("start delimiter {} not found", &start_delimiter))?;
     let toml_start = start_index + start_delimiter.len();
-    let end_index = content[toml_start..].find(end_delimiter).ok_or_eyre(format!("end delimiter {} not found", &end_delimiter))?;
+    let end_index = content[toml_start..]
+        .find(end_delimiter)
+        .ok_or_eyre(format!("end delimiter {} not found", &end_delimiter))?;
     let toml_end = toml_start + end_index;
     let toml_str = &content[toml_start..toml_end];
 

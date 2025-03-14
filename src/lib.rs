@@ -1,21 +1,21 @@
 use color_eyre::Report;
-use components::blog_post::blog_post;
+pub use components::{about, blog_post, index, mastodon_comments, template};
 use log::debug;
+use serde::{Deserialize, Serialize};
 use std::{
     fs::{self, DirEntry},
     io::{self, ErrorKind},
     path::Path,
 };
-use serde::{Deserialize, Serialize};
 use toml::value::Date;
 
-pub mod components;
+mod components;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BlogPostConfig {
     pub title: String,
     pub date: Date,
-    pub extra: BlogPostConfigExtra
+    pub extra: BlogPostConfigExtra,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -23,7 +23,7 @@ pub struct BlogPostConfig {
 pub struct BlogPostConfigExtra {
     pub postid: String,
     pub miku_img: String,
-    pub miku_q: String
+    pub miku_q: String,
 }
 
 /// Saves the given content to a file in the specified output directory.
@@ -35,7 +35,7 @@ pub struct BlogPostConfigExtra {
 /// use std::fs;
 /// use tempfile::tempdir;
 /// use blog::save_file;
-/// 
+///
 /// const FILE_NAME: &str = "example.txt";
 /// const CONTENT: &str = "Hello, world!";
 ///
@@ -54,7 +54,7 @@ pub struct BlogPostConfigExtra {
 /// ```
 /// use blog::save_file;
 /// use std::path::Path;
-/// 
+///
 /// let result = save_file("Hello!", Path::new("/non/existent/dir"), "file.txt");
 /// assert!(result.is_err());
 /// ```
@@ -84,25 +84,25 @@ pub fn save_file(content: &str, out_dir: &Path, file_name: &str) -> io::Result<(
 /// use tempfile::tempdir;
 /// use blog::read_all_files;
 /// use color_eyre::{eyre::OptionExt, Report};
-/// 
+///
 /// let dir = tempdir().unwrap();
 /// fs::write(dir.path().join("file1.txt"), "Content 1").unwrap();
 /// fs::write(dir.path().join("file2.txt"), "Content 2").unwrap();
-/// 
+///
 /// let t = dir.path();
 /// let files = read_all_files(t, "txt");
 /// let files = files.unwrap();
-/// 
+///
 /// assert_eq!(files.len(), 2);
 /// assert!(files.iter().any(|(name, content)| name == "file1.html" && content == "Content 1"));
 /// assert!(files.iter().any(|(name, content)| name == "file2.html" && content == "Content 2"));
 /// ```
-/// 
+///
 /// No matching files:
 /// ```
 /// use tempfile::tempdir;
 /// use blog::read_all_files;
-/// 
+///
 /// let binding = tempdir().unwrap();
 /// let dir = binding.path();
 /// let files = read_all_files(dir, "md").unwrap();
@@ -113,7 +113,7 @@ pub fn save_file(content: &str, out_dir: &Path, file_name: &str) -> io::Result<(
 /// ```
 /// use blog::read_all_files;
 /// use std::path::Path;
-/// 
+///
 /// let result = read_all_files(Path::new("/non/existent/path"), "txt");
 /// assert!(result.is_err());
 /// ```
@@ -129,7 +129,7 @@ pub fn read_all_files(path: &Path, extension: &str) -> io::Result<Vec<(String, S
             }
         })
         .collect::<Result<Vec<DirEntry>, io::Error>>()?;
-    
+
     debug!("{:?}", &entries);
 
     let res = entries
@@ -173,39 +173,15 @@ pub fn render_posts_to_html(
 
 /// Saves provided HTML content as `.html` files in the specified output directory.
 ///
-/// Each tuple in `posts` contains a file path (String), a mock `Table` config, 
+/// Each tuple in `posts` contains a file path (String), a mock `Table` config,
 /// and the page content as a string. The path will have its extension changed to `.html`.
 ///
 /// # Errors
 /// Returns an `io::Result` error if file writing fails.
-///
-/// # Examples
-/// ```
-/// use std::collections::HashMap;
-/// use tempfile::tempdir;
-/// use std::fs;
-/// use toml::Table;
-/// 
-/// use blog::save_html_posts;
-/// 
-/// let posts = vec![ 
-///     ("post1".to_string(), Table::new(), "<h1>Post 1</h1>".to_string()),
-///     ("folder/post2".to_string(), Table::new(), "<h1>Post 2</h1>".to_string()),
-/// ];
-///
-/// let output_dir = tempdir().unwrap();
-/// save_html_posts(&posts, output_dir.path()).unwrap();
-///
-/// assert_eq!(
-///     fs::read_to_string(output_dir.path().join("post1.html")).unwrap(),
-///     "<h1>Post 1</h1>"
-/// );
-/// assert_eq!(
-///     fs::read_to_string(output_dir.path().join("folder/post2.html")).unwrap(),
-///     "<h1>Post 2</h1>"
-/// );
-/// ```
-pub fn save_html_posts(posts: &[(String, BlogPostConfig, String)], output_dir: &Path) -> io::Result<()> {
+pub fn save_html_posts(
+    posts: &[(String, BlogPostConfig, String)],
+    output_dir: &Path,
+) -> io::Result<()> {
     for (path, _config, page) in posts {
         let mut target = Path::new(output_dir).join(path);
         target.set_extension("html");

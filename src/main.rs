@@ -1,38 +1,15 @@
-use blog::{copy_static_content, read_all_files, render_posts_to_html, save_file, save_html_posts, BlogPostConfig};
+use blog::{
+    copy_static_content, read_all_files, render_posts_to_html, save_file, save_html_posts,
+    BlogPostConfig,
+};
 use color_eyre::Report;
 
-use crate::components::{about::about, index::index, template::template};
+use blog::{about, index, template};
 use std::path::Path;
-mod components;
 
 use clap::{Arg, Command};
-use log::{debug, info, LevelFilter};
+use log::LevelFilter;
 use simple_logger::SimpleLogger;
-
-fn init_loglevel() -> Result<(), Report> {
-    let matches = Command::new("chuub")
-        .version("1.0")
-        .author("chuu <j@chuu.dev>")
-        .about("A simple static site generator")
-        .arg(
-            Arg::new("verbose")
-                .short('v')
-                .long("verbose")
-                .help("Enable verbose logging")
-                .action(clap::ArgAction::Count),
-        )
-        .get_matches();
-
-    let log_level = match matches.get_count("verbose") {
-        0 => LevelFilter::Info,
-        1 => LevelFilter::Debug,
-        _ => LevelFilter::Trace,
-    };
-
-    SimpleLogger::new().with_level(log_level).init()?;
-
-    Ok(())
-}
 
 /// On error handling: This is a program designed to be used via command line by
 /// a technical audience. This is why we bubble the errors to the main function
@@ -59,5 +36,30 @@ fn main() -> Result<(), Report> {
     copy_static_content(Path::new(public_dir), Path::new(out_dir))?;
 
     println!("Built site OK!");
+    Ok(())
+}
+
+fn init_loglevel() -> Result<(), Report> {
+    let matches = Command::new("chuub")
+        .version("1.0")
+        .author("chuu <j@chuu.dev>")
+        .about("A simple static site generator")
+        .arg(
+            Arg::new("verbose")
+                .short('v')
+                .long("verbose")
+                .help("Enable verbose logging")
+                .action(clap::ArgAction::Count),
+        )
+        .get_matches();
+
+    let log_level = match matches.get_count("verbose") {
+        0 => LevelFilter::Info,
+        1 => LevelFilter::Debug,
+        _ => LevelFilter::Trace,
+    };
+
+    SimpleLogger::new().with_level(log_level).init()?;
+
     Ok(())
 }
