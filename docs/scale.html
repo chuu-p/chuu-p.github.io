@@ -1895,7 +1895,7 @@
     style="color:#af7f30;">l</span><span style="color:#b18234;">c</span><span
     style="color:#d9b372;">i</span><span style="color:#cba15c;">;</span><span
     style="color:#ae7e2f;">l</span><br>
-</a></div><nav class="flex items-center justify-between flex-wrap bg-black-500 p-6"><div class="flex items-center flex-shrink-0 text-white mr-6"><a href="/" class="font-semibold text-xl tracking-tight">chuu.dev</a></div><div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto"><div class="text-xl lg:flex-grow"><a href="about.html" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">about</a><a href="https://github.com/chuu-p/chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">github</a><a href="https://mastodon.social/@chuu_p" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">mastodon</a><a href="mailto:j@chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">email</a></div></div></nav><div class="p-6 container mx-auto"><div style="float:right; max-width: 25%;"><blockquote><p>A cool quote</p></blockquote><img style="" src="miku_zen.png"></img></div><script type="text/javascript">async function load_comments(postid) {
+</a></div><nav class="flex items-center justify-between flex-wrap bg-black-500 p-6"><div class="flex items-center flex-shrink-0 text-white mr-6"><a href="/" class="font-semibold text-xl tracking-tight">chuu.dev</a></div><div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto"><div class="text-xl lg:flex-grow"><a href="about.html" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">about</a><a href="https://github.com/chuu-p/chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">github</a><a href="https://mastodon.social/@chuu_p" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">mastodon</a><a href="mailto:chuu801@pm.me" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">email</a></div></div></nav><div class="p-6 container mx-auto"><div style="float:right; max-width: 25%;"><blockquote><p>A cool quote</p></blockquote><img style="" src="miku_zen.png"></img></div><script type="text/javascript">async function load_comments(postid) {
     console.log("LOAD COMMENTS, ID: " + postid)
     const url = `https://mastodon.social/api/v1/statuses/${postid}/context`;
     try {
@@ -1924,7 +1924,7 @@ function populate_comments(data) {
     if (data?.descendants?.length > 0) {
         data.descendants.forEach(comment => {
             const commentDiv = document.createElement("div");
-            commentDiv.className = "flex items-start space-x-4 p-4 border-b border-gray-200";
+            commentDiv.className = "flex items-start space-x-4 p-4 border-full border-gray-800";
 
             const avatar = document.createElement("img");
             avatar.src = comment.account.avatar;
@@ -1935,13 +1935,15 @@ function populate_comments(data) {
             const contentDiv = document.createElement("div");
             contentDiv.className = "flex-1";
 
-            const authorName = document.createElement("div");
+            const authorName = document.createElement("a");
             authorName.className = "font-semibold";
             authorName.textContent = comment.account.display_name;
+            authorName.href = comment.account.url;
 
-            const commentText = document.createElement("div");
+            const commentText = document.createElement("a");
             commentText.className = "mt-1";
             commentText.innerHTML = comment.content;
+            commentText.href = comment.url;
 
             contentDiv.appendChild(authorName);
             contentDiv.appendChild(commentText);

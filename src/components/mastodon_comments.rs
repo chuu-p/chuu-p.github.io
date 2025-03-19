@@ -7,6 +7,12 @@ use maud::{html, Markup, PreEscaped};
 use crate::BlogPostConfig;
 
 pub fn mastodon_comments(config: &BlogPostConfig) -> Markup {
+    if !config.extra.comments {
+        return html! {
+            div { "comments are disabled" }
+        };
+    }
+
     let script = fs::read_to_string(std::env::current_dir().unwrap().join("src/script.js"))
         .expect("Unable to read file");
 
@@ -28,5 +34,3 @@ pub fn mastodon_comments(config: &BlogPostConfig) -> Markup {
 
     PreEscaped(out)
 }
-
-// {"date": Datetime(Datetime { date: Some(Date { year: 2025, month: 2, day: 27 }), time: None, offset: None }), "extra": Table({"miku_img": String("miku_jump"), "miku_q": String("Hit the GRTTy!"), "postid": Integer(114075174358638781)}), "title": String("GRTTy Stack: gRPC Rust React Typescript")}

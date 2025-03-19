@@ -45,7 +45,7 @@ fn render() -> Markup {
                             a href="about.html" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4" { "about" }
                             a href="https://github.com/chuu-p/chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4" { "github" }
                             a href="https://mastodon.social/@chuu_p" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4" { "mastodon" }
-                            a href="mailto:j@chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4" { "email" }
+                            a href="mailto:chuu801@pm.me" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4" { "email" }
                         }
                     }
                 }

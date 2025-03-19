@@ -1,4 +1,5 @@
 use color_eyre::Report;
+use components::blog_post::get_header;
 pub use components::{about, blog_post, index, mastodon_comments, template};
 use log::debug;
 use serde::{Deserialize, Serialize};
@@ -18,9 +19,9 @@ pub struct BlogPostConfig {
     pub extra: BlogPostConfigExtra,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-
+#[derive(Debug, Serialize, Deserialize, Default)]
 pub struct BlogPostConfigExtra {
+    pub comments: bool,
     pub postid: String,
     pub miku_img: String,
     pub miku_q: String,
@@ -67,8 +68,8 @@ pub struct BlogPostConfigExtra {
 ///     assert!(result.is_err());
 /// }
 /// ```
-pub fn save_file(content: &str, out_dir: &Path, file_name: &str) -> io::Result<()> {
-    let target = out_dir.join(file_name);
+pub fn save_file(content: &str, out_dir: impl AsRef<Path>, file_name: &str) -> io::Result<()> {
+    let target = out_dir.as_ref().join(file_name);
     println!("write {:?}", &target);
     fs::write(&target, content)?;
     Ok(())
@@ -117,13 +118,16 @@ pub fn save_file(content: &str, out_dir: &Path, file_name: &str) -> io::Result<(
 /// let result = read_all_files(Path::new("/non/existent/path"), "txt");
 /// assert!(result.is_err());
 /// ```
-pub fn read_all_files(path: &Path, extension: &str) -> io::Result<Vec<(String, String)>> {
-    let entries = fs::read_dir(path)?
+pub fn read_all_files(
+    path: impl AsRef<Path>,
+    extension: &str,
+) -> io::Result<Vec<(String, String)>> {
+    let entries = fs::read_dir(&path)?
         .filter_map(|res| {
             let de = res.ok()?;
             let ft = &de.file_type().ok()?;
             if ft.is_file() && de.path().extension().is_some_and(|ext| ext == extension) {
-                Some(Ok::<std::fs::DirEntry, io::Error>(de))
+                Some(Ok::<DirEntry, io::Error>(de))
             } else {
                 None
             }
@@ -135,12 +139,13 @@ pub fn read_all_files(path: &Path, extension: &str) -> io::Result<Vec<(String, S
     let res = entries
         .into_iter()
         .map(|de| {
-            let path = path.join(de.file_name());
+            let path = path.as_ref().join(de.file_name());
             let mut html_path = path.clone();
             html_path.set_extension("html");
 
             let file_name = html_path
                 .file_name()
+                // .ok_or_else(|| "filename error")?
                 .ok_or_else(|| io::Error::new(ErrorKind::Other, "filename error"))?
                 .to_str()
                 .ok_or_else(|| io::Error::new(ErrorKind::Other, "to_str error"))?
@@ -160,15 +165,13 @@ pub fn read_all_files(path: &Path, extension: &str) -> io::Result<Vec<(String, S
 pub fn render_posts_to_html(
     posts: &[(String, String)],
 ) -> Result<Vec<(String, BlogPostConfig, String)>, Report> {
-    let res = posts
+    posts
         .iter()
         .map(|(path, post)| {
             let (table, rendered_page) = blog_post(post.to_string())?;
             Ok::<(String, BlogPostConfig, String), Report>((path.to_owned(), table, rendered_page))
         })
-        .collect::<Result<Vec<(String, BlogPostConfig, String)>, Report>>();
-
-    res
+        .collect::<Result<Vec<(String, BlogPostConfig, String)>, Report>>()
 }
 
 /// Saves provided HTML content as `.html` files in the specified output directory.
@@ -180,10 +183,10 @@ pub fn render_posts_to_html(
 /// Returns an `io::Result` error if file writing fails.
 pub fn save_html_posts(
     posts: &[(String, BlogPostConfig, String)],
-    output_dir: &Path,
+    output_dir: impl AsRef<Path>,
 ) -> io::Result<()> {
     for (path, _config, page) in posts {
-        let mut target = Path::new(output_dir).join(path);
+        let mut target = output_dir.as_ref().join(path);
         target.set_extension("html");
         fs::write(&target, page)?;
     }
@@ -257,13 +260,13 @@ pub fn save_html_posts(
 /// assert!(fs::read_to_string(dst_file).unwrap().is_empty());
 /// ```
 /// see: https://stackoverflow.com/a/65192210/26371953
-pub fn copy_static_content(src: &Path, dst: &Path) -> io::Result<()> {
-    fs::create_dir_all(dst)?;
+pub fn copy_static_content(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> io::Result<()> {
+    fs::create_dir_all(&dst)?;
 
     for entry in fs::read_dir(src)? {
         let entry = entry?;
         let entry_path = entry.path();
-        let target_path = dst.join(entry.file_name());
+        let target_path = dst.as_ref().join(entry.file_name());
 
         if entry.file_type()?.is_dir() {
             copy_static_content(&entry_path, &target_path)?;

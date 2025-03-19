@@ -1,39 +1,19 @@
-use maud::{html, Render};
+use std::fs;
 
-pub fn about() -> String {
-    html! {
-        p {
-            "Made with "
-            a href="https://www.getzola.org/" {
-                "ZOLA"
-            }
-        }
-        p {
-            "Comments via "
-            a href="https://mastodon.social" {
-                "Mastodon"
-            }
-        }
-        p {
-            a href="https://www.sigstick.com/pack/Ds8XSC82a5s1iBSx4Bhi" {
-                "Miku-Stickers"
-            }
-            " by "
-            a href="https://www.sigstick.com/stickers?author=kal%20(store-KP-girl))" {
-                "kal (store-KP-girl)"
-            }
-        }
-        p {
-            "Made with "
-            span class="emoji" {
-                "💕"
-            }
-            " in Germany"
-        }
-        a href="https://brainmade.org/" {
-            img src="https://brainmade.org/white-logo.svg" alt="Brainmade";
-        }
-    }
-    .render()
-    .into_string()
+use color_eyre::Report;
+use handlebars::Handlebars;
+use crate::{get_header, components::BlogPost, components::Markdown};
+
+pub fn about() -> Result<String, Report> {
+    let path = "src/content/static/about.md";
+    let content = fs::read_to_string(&path)?;
+
+    let (table, content) = get_header(&content)?;
+
+    let html = Markdown(&content).render();
+    let out = BlogPost(&html).render(&table);
+
+    let rendered_page = Handlebars::new().render_template(&out?, &table)?;
+
+    Ok(rendered_page)
 }

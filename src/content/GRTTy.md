@@ -4,15 +4,11 @@ date = 2025-02-27
 category = "rust"
 
 [extra]
+comments = true
 postid = "114075174358638781"
 miku_img = "miku_jump"
 miku_q = "Hit the GRTTy!"
 +++
-
-> **{{title}}**  
-> {{date}}
-
-## Stack
 
 - IDL
   - [gRPC](https://grpc.io/)
@@ -24,6 +20,8 @@ miku_q = "Hit the GRTTy!"
   - [Typescript](https://www.typescriptlang.org/)
   - [React](https://react.dev/)
   - [Tailwind CSS](https://tailwindcss.com/)
+
+## {{title}}
 
 > **_NOTE:_** You can find the code for a working full stack example repository [here](https://github.com/chuu-p/GRTTy) [https://github.com/chuu-p/GRTTy](https://github.com/chuu-p/GRTTy)
 
@@ -59,9 +57,9 @@ It’s like a single source of truth for the API.
 Create the root project directory, cd into it and init git repo.
 
 ~~~sh
-mkdir example
-cd example
-git init
+$ mkdir example
+$ cd example
+$ git init
 ~~~
 
 Now we create the gRPC `.proto` api contract and set some environment variables. Both the frontend and backend will use
@@ -104,12 +102,12 @@ On naming:
 
 ~~~sh
 # 1. create the frontend project
-pnpm create vite example --template react-ts
-cd example
+$ pnpm create vite example --template react-ts
+$ cd example
 
 # 2. add tailwind
-pnpm install tailwindcss @tailwindcss/vite
-pnpm approve-builds # press: a -> enter
+$ pnpm install tailwindcss @tailwindcss/vite
+$ pnpm approve-builds # press: a -> enter
 ~~~
 
 `example/vite.config.ts`
@@ -130,15 +128,15 @@ export default defineConfig({
 add protobuf codegen and generate the typescript gRPC server and gRPC client code from the gRPC spec:
 
 ~~~sh
-cd example
+$ cd example
 
 #  protobuf codegen & runtime
-pnpm install -g protoc-gen-ts
-pnpm add @protobuf-ts/plugin @protobuf-ts/grpcweb-transport @protobuf-ts/runtime @protobuf-ts/runtime-rpc google-protobuf @grpc/grpc-js
+$ pnpm install -g protoc-gen-ts
+$ pnpm add @protobuf-ts/plugin @protobuf-ts/grpcweb-transport @protobuf-ts/runtime @protobuf-ts/runtime-rpc google-protobuf @grpc/grpc-js
 
 # generate the typescript gRPC server and gRPC client code
-mkdir src/protobuf-ts-gen
-npx protoc -I=../example-spec/ example.proto --ts_out=./src/protobuf-ts-gen
+$ mkdir src/protobuf-ts-gen
+$ npx protoc -I=../example-spec/ example.proto --ts_out=./src/protobuf-ts-gen
 ~~~
 
 you need to run the `npx protoc` command every time you change the `example.proto` spec.
@@ -193,8 +191,8 @@ export default function HealthCheck() {
 ~~~
 
 ~~~sh
-cd example
-pnpm run dev
+$ cd example
+$ pnpm run dev
 # Now press "Check Health!"
 # -> Error! RpcError: NetworkError when attempting to fetch resource. Code: INTERNAL Method: example.HealthCheckService/CheckHealth
 ~~~
@@ -206,10 +204,10 @@ There is no backend / gRPC server yet!
 We will create a rust project for the the gRPC Server.
 
 ~~~sh
-cd ..
-cargo new example-api
-cd example-api
-cargo add --build tonic-build
+$ cd ..
+$ cargo new example-api
+$ cd example-api
+$ cargo add --build tonic-build
 ~~~
 
 `example-api/cargo.toml`
@@ -336,8 +334,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 Starting the server:
 
 ~~~sh
-cd example-api
-cargo run
+$ cd example-api
+$ cargo run
 ...
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 19.35s
      Running `target/debug/example-api`
@@ -347,10 +345,9 @@ Waiting now.
 ~~~
 
 We can check the server works by running this command in a separate terminal:
-`grpcurl -plaintext -import-path ./example-spec/ -proto example.proto '127.0.0.1:50051' example.HealthCheckService/CheckHealth`
 
 ~~~sh
-grpcurl -plaintext -import-path ./example-spec/ -proto example.proto '127.0.0.1:50051' example.HealthCheckService/CheckHealth
+$ grpcurl -plaintext -import-path ./example-spec/ -proto example.proto '127.0.0.1:50051' example.HealthCheckService/CheckHealth
 {}
 ~~~
 

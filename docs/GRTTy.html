@@ -140,7 +140,7 @@
   summary {
     @apply font-semibold;
   }
-}</style><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>chuu!</title><script src="highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/protobuf.min.js"></script><style type="text/tailwindcss">code:not([class]) { color: #86cecb; }</style><link rel="stylesheet" href="styles/ir-black.min.css"><script>hljs.highlightAll();</script></head><body class="bg-black text-white font-sans text-l md:text-2xl mx-auto w-full max-w-5xl"><div class="flex w-full justify-center"><a href="/" style="font-family: 'VT323', monospace; font-size: clamp(4.75pt, 1cqw, 8pt); line-height: 1; text-decoration: none; font-weight: bold; filter: invert(100%);">
+}</style><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>chuu!</title><script src="highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/protobuf.min.js"></script><style type="text/tailwindcss">code:not([class]) { color: #86cecb; }</style><link rel="stylesheet" href="styles/ir-black.min.css"><script>hljs.highlightAll();</script></head><body class="bg-black text-white font-sans text-l md:text-2xl mx-auto w-full max-w-5xl"><div class="flex w-full justify-center"><a href="/" style="font-family: 'VT323', monospace; font-size: clamp(4pt, 1cqw, 8pt); line-height: 1; text-decoration: none; font-weight: bold; filter: invert(100%);">
     <span style="color:#8b4d00;">x</span><span style="color:#a35b00;">d</span><span
     style="color:#653801;">0</span><span style="color:#140b01;">W</span><span
     style="color:#000000;">M</span><span style="color:#050300;">M</span><span
@@ -1895,12 +1895,7 @@
     style="color:#af7f30;">l</span><span style="color:#b18234;">c</span><span
     style="color:#d9b372;">i</span><span style="color:#cba15c;">;</span><span
     style="color:#ae7e2f;">l</span><br>
-</a></div><nav class="flex items-center justify-between flex-wrap bg-black-500 p-6"><div class="flex items-center flex-shrink-0 text-white mr-6"><a href="/" class="font-semibold text-xl tracking-tight">chuu.dev</a></div><div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto"><div class="text-xl lg:flex-grow"><a href="about.html" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">about</a><a href="https://github.com/chuu-p/chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">github</a><a href="https://mastodon.social/@chuu_p" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">mastodon</a><a href="mailto:j@chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">email</a></div></div></nav><div class="p-6 container mx-auto"><div style="float:right; max-width: 25%;"><blockquote><p>Hit the GRTTy!</p></blockquote><img style="" src="miku_jump.png"></img></div><blockquote>
-<p><strong>GRTTy Stack: gRPC Rust React Typescript</strong><br />
-[object]</p>
-</blockquote>
-<h2>Stack</h2>
-<ul>
+</a></div><nav class="flex items-center justify-between flex-wrap bg-black-500 p-6"><div class="flex items-center flex-shrink-0 text-white mr-6"><a href="/" class="font-semibold text-xl tracking-tight hover:text-white">chuu.dev</a></div><div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto"><div class="text-xl lg:flex-grow"><a href="about.html" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">about</a><a href="https://github.com/chuu-p/chuu.dev" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">github</a><a href="https://mastodon.social/@chuu_p" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">mastodon</a><a href="mailto:chuu801@pm.me" class="underline block lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">email</a></div></div></nav><div class="p-6 container mx-auto"><div style="float:right; max-width: 50%;"><blockquote><p>Hit the GRTTy!</p></blockquote><img style="" src="miku_jump.png"></img></div><ul>
 <li>IDL
 <ul>
 <li><a href="https://grpc.io/">gRPC</a></li>
@@ -1921,6 +1916,7 @@
 </ul>
 </li>
 </ul>
+<h2>GRTTy Stack: gRPC Rust React Typescript</h2>
 <blockquote>
 <p><strong><em>NOTE:</em></strong> You can find the code for a working full stack example repository <a href="https://github.com/chuu-p/GRTTy">here</a> <a href="https://github.com/chuu-p/GRTTy">https://github.com/chuu-p/GRTTy</a></p>
 </blockquote>
@@ -1949,9 +1945,9 @@ services (API functions) the frontend and backend use to talk to each other.</p>
 don’t accidentally break the communication.</p>
 <p>It’s like a single source of truth for the API.</p>
 <p>Create the root project directory, cd into it and init git repo.</p>
-<pre><code class="language-sh">mkdir example
-cd example
-git init
+<pre><code class="language-sh">$ mkdir example
+$ cd example
+$ git init
 </code></pre>
 <p>Now we create the gRPC <code>.proto</code> api contract and set some environment variables. Both the frontend and backend will use
 both files.</p>
@@ -1986,12 +1982,12 @@ DATABASE_URL=example.db
 </li>
 </ul>
 <pre><code class="language-sh"># 1. create the frontend project
-pnpm create vite example --template react-ts
-cd example
+$ pnpm create vite example --template react-ts
+$ cd example
 
 # 2. add tailwind
-pnpm install tailwindcss @tailwindcss/vite
-pnpm approve-builds # press: a -&gt; enter
+$ pnpm install tailwindcss @tailwindcss/vite
+$ pnpm approve-builds # press: a -&gt; enter
 </code></pre>
 <p><code>example/vite.config.ts</code></p>
 <pre><code class="language-ts">import path from "path";
@@ -2006,15 +2002,15 @@ export default defineConfig({
 });
 </code></pre>
 <p>add protobuf codegen and generate the typescript gRPC server and gRPC client code from the gRPC spec:</p>
-<pre><code class="language-sh">cd example
+<pre><code class="language-sh">$ cd example
 
 #  protobuf codegen &amp; runtime
-pnpm install -g protoc-gen-ts
-pnpm add @protobuf-ts/plugin @protobuf-ts/grpcweb-transport @protobuf-ts/runtime @protobuf-ts/runtime-rpc google-protobuf @grpc/grpc-js
+$ pnpm install -g protoc-gen-ts
+$ pnpm add @protobuf-ts/plugin @protobuf-ts/grpcweb-transport @protobuf-ts/runtime @protobuf-ts/runtime-rpc google-protobuf @grpc/grpc-js
 
 # generate the typescript gRPC server and gRPC client code
-mkdir src/protobuf-ts-gen
-npx protoc -I=../example-spec/ example.proto --ts_out=./src/protobuf-ts-gen
+$ mkdir src/protobuf-ts-gen
+$ npx protoc -I=../example-spec/ example.proto --ts_out=./src/protobuf-ts-gen
 </code></pre>
 <p>you need to run the <code>npx protoc</code> command every time you change the <code>example.proto</code> spec.</p>
 <p>now we add the "health check backend" functionality to frontend.</p>
@@ -2061,18 +2057,18 @@ export default function HealthCheck() {
   );
 }
 </code></pre>
-<pre><code class="language-sh">cd example
-pnpm run dev
+<pre><code class="language-sh">$ cd example
+$ pnpm run dev
 # Now press "Check Health!"
 # -&gt; Error! RpcError: NetworkError when attempting to fetch resource. Code: INTERNAL Method: example.HealthCheckService/CheckHealth
 </code></pre>
 <p>There is no backend / gRPC server yet!</p>
 <h2>Backend</h2>
 <p>We will create a rust project for the the gRPC Server.</p>
-<pre><code class="language-sh">cd ..
-cargo new example-api
-cd example-api
-cargo add --build tonic-build
+<pre><code class="language-sh">$ cd ..
+$ cargo new example-api
+$ cd example-api
+$ cargo add --build tonic-build
 </code></pre>
 <p><code>example-api/cargo.toml</code></p>
 <pre><code class="language-toml">[package]
@@ -2184,8 +2180,8 @@ async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 }
 </code></pre>
 <p>Starting the server:</p>
-<pre><code class="language-sh">cd example-api
-cargo run
+<pre><code class="language-sh">$ cd example-api
+$ cargo run
 ...
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 19.35s
      Running `target/debug/example-api`
@@ -2193,9 +2189,8 @@ server starting
 server started
 Waiting now.
 </code></pre>
-<p>We can check the server works by running this command in a separate terminal:
-<code>grpcurl -plaintext -import-path ./example-spec/ -proto example.proto '127.0.0.1:50051' example.HealthCheckService/CheckHealth</code></p>
-<pre><code class="language-sh">grpcurl -plaintext -import-path ./example-spec/ -proto example.proto '127.0.0.1:50051' example.HealthCheckService/CheckHealth
+<p>We can check the server works by running this command in a separate terminal:</p>
+<pre><code class="language-sh">$ grpcurl -plaintext -import-path ./example-spec/ -proto example.proto '127.0.0.1:50051' example.HealthCheckService/CheckHealth
 {}
 </code></pre>
 <p>If we check the frontend and press 'Check Health!' -&gt; Success! [object Object]</p>
@@ -2531,4 +2526,4 @@ function populate_comments(data) {
         noComments.textContent = "No comments yet.";
         commentsView.appendChild(noComments);
     }
-}</script><button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="load_comments('114075174358638781')">Load Mastodon Comments</button><div id="comments-view"></div></div><br><br><br><br><p class="text-xs">Made with &lt;3 in 2025</p></body></html>
+}</script><button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="load_comments('114075174358638781')">Load Mastodon Comments</button></div><br><br><br><br><p class="text-xs">Made with &lt;3 in 2025</p></body></html>

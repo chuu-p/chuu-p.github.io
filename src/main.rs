@@ -1,11 +1,11 @@
+use std::path::Path;
+
 use blog::{
-    copy_static_content, read_all_files, render_posts_to_html, save_file, save_html_posts,
-    BlogPostConfig,
+    copy_static_content, read_all_files, render_posts_to_html, save_file, save_html_posts, BlogPostConfig
 };
 use color_eyre::Report;
 
 use blog::{about, index, template};
-use std::path::Path;
 
 use clap::{Arg, Command};
 use log::LevelFilter;
@@ -18,22 +18,26 @@ fn main() -> Result<(), Report> {
     init_loglevel()?;
     color_eyre::install()?;
 
-    let out_dir: &Path = Path::new("docs");
-    let public_dir: &Path = Path::new("public");
-    let content_dir: &Path = Path::new("src/content");
+    const OUT_DIR: &str = "docs";
+    const PUBLIC_DIR: &str = "public";
+    const CONTENT_DIR: &str = "src/content";
 
-    let md_posts = read_all_files(content_dir, "md")?;
+    let md_posts = read_all_files(Path::new(CONTENT_DIR), "md")?;
     let html_posts: Vec<(String, BlogPostConfig, String)> = render_posts_to_html(&md_posts)?;
-    save_html_posts(&html_posts, out_dir)?;
+    save_html_posts(&html_posts, Path::new(OUT_DIR))?;
 
     save_file(
         &template(index(html_posts)?).into_string(),
-        out_dir,
+        Path::new(OUT_DIR),
         "index.html",
     )?;
-    save_file(&template(about()).into_string(), out_dir, "about.html")?;
+    save_file(
+        &template(about()?).into_string(),
+        Path::new(OUT_DIR),
+        "about.html",
+    )?;
 
-    copy_static_content(Path::new(public_dir), Path::new(out_dir))?;
+    copy_static_content(PUBLIC_DIR, OUT_DIR)?;
 
     println!("Built site OK!");
     Ok(())
@@ -42,7 +46,7 @@ fn main() -> Result<(), Report> {
 fn init_loglevel() -> Result<(), Report> {
     let matches = Command::new("chuub")
         .version("1.0")
-        .author("chuu <j@chuu.dev>")
+        .author("chuu <chuu801@pm.me>")
         .about("A simple static site generator")
         .arg(
             Arg::new("verbose")

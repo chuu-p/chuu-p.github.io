@@ -11,4 +11,4 @@ pub mod about;
 pub use about::about;
 
 pub mod blog_post;
-pub use blog_post::blog_post;
+pub use blog_post::{blog_post, BlogPost, Markdown};

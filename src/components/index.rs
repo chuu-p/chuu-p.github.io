@@ -6,7 +6,7 @@ use crate::BlogPostConfig;
 pub fn index(posts: Vec<(String, BlogPostConfig, String)>) -> Result<String, Report> {
     let mut links_contents = posts
         .into_iter()
-        .map(|(path, config, content)| (format!("/{}", path), config, content))
+        .map(|(path, config, content)| (format!("/{path}"), config, content))
         .collect::<Vec<(String, BlogPostConfig, String)>>();
     links_contents.sort_by(|a, b| a.1.date.cmp(&b.1.date));
     links_contents.reverse();

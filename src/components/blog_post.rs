@@ -13,7 +13,7 @@ use super::{mastodon_comments::mastodon_comments, template::template};
 static REG: LazyLock<Handlebars<'static>> = LazyLock::new(Handlebars::new);
 
 pub fn blog_post(markdown: String) -> Result<(BlogPostConfig, String), Report> {
-    let (table, content) = get_header(markdown)?;
+    let (table, content) = get_header(&markdown)?;
 
     let html = Markdown(&content).render();
     let out = BlogPost(&html).render(&table);
@@ -24,17 +24,17 @@ pub fn blog_post(markdown: String) -> Result<(BlogPostConfig, String), Report> {
     Ok((table, rendered_page))
 }
 
-fn get_header(content: String) -> Result<(BlogPostConfig, String), Report> {
-    let start_delimiter = "+++";
-    let end_delimiter = "+++";
+pub fn get_header(content: &str) -> Result<(BlogPostConfig, String), Report> {
+    const START_DELIMITER: &str = "+++";
+    const END_DELIMITER: &str = "+++";
 
     let start_index = content
-        .find(start_delimiter)
-        .ok_or_eyre(format!("start delimiter {} not found", &start_delimiter))?;
-    let toml_start = start_index + start_delimiter.len();
+        .find(START_DELIMITER)
+        .ok_or_eyre(format!("start delimiter {} not found", &START_DELIMITER))?;
+    let toml_start = start_index + START_DELIMITER.len();
     let end_index = content[toml_start..]
-        .find(end_delimiter)
-        .ok_or_eyre(format!("end delimiter {} not found", &end_delimiter))?;
+        .find(END_DELIMITER)
+        .ok_or_eyre(format!("end delimiter {} not found", &END_DELIMITER))?;
     let toml_end = toml_start + end_index;
     let toml_str = &content[toml_start..toml_end];
 
@@ -42,16 +42,16 @@ fn get_header(content: String) -> Result<(BlogPostConfig, String), Report> {
     let toml: BlogPostConfig = toml::from_str(toml_str)?;
     debug!("toml {:?}", &toml);
 
-    let markdown_start = toml_end + end_delimiter.len();
+    let markdown_start = toml_end + END_DELIMITER.len();
     let markdown_content = content[markdown_start..].to_string();
 
     Ok((toml, markdown_content))
 }
 
-struct Markdown<'a>(&'a str);
+pub struct Markdown<'a>(pub &'a str);
 
 impl Markdown<'_> {
-    fn render(self) -> String {
+    pub fn render(self) -> String {
         let mut output_html = String::new();
         let parser = Parser::new(self.0);
         push_html(&mut output_html, parser);
@@ -59,12 +59,12 @@ impl Markdown<'_> {
     }
 }
 
-struct BlogPost<'a>(&'a str);
+pub struct BlogPost<'a>(pub &'a str);
 
 impl BlogPost<'_> {
-    fn render(self, config: &BlogPostConfig) -> Result<String, RenderError> {
+    pub fn render(self, config: &BlogPostConfig) -> Result<String, RenderError> {
         let html_template = html! (
-            div style="float:right; max-width: 25%;" {
+            div style="float:right; max-width: 50%;" {
                 blockquote {
                     p {
                         "{{extra.miku_q}}"

@@ -6,6 +6,7 @@ kanban-plugin: board
 
 ## todo
 
+- [ ] #t14 404 page!
 - [ ] #t9 Performance Analysis & fix warning "cdn.tailwindcss.com should not be used in production."
 
 
