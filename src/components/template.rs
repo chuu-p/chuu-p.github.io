@@ -55,6 +55,7 @@ pub fn template(inner: String) -> Markup {
             script src="highlight.min.js" {}
             // TODO download to local
             script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/protobuf.min.js" {}
+            script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/nix.min.js" {}
             style type="text/tailwindcss" {
                 (PreEscaped("code:not([class]) { color: #86cecb; }"))
             }

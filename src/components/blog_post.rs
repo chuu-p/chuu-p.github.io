@@ -64,7 +64,7 @@ pub struct BlogPost<'a>(pub &'a str);
 impl BlogPost<'_> {
     pub fn render(self, config: &BlogPostConfig) -> Result<String, RenderError> {
         let html_template = html! (
-            div style="float:right; max-width: 50%;" {
+            div style="float:right; max-width: 50%; margin-left: 25px;" {
                 blockquote {
                     p {
                         "{{extra.miku_q}}"

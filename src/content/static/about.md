@@ -12,7 +12,31 @@ miku_q = "Hi!"
 
 I am [chuu](https://github.com/chuu-p) and this is my personal website and blog!
 
-This website is built from a static site generator written in rust.
+---
+
+About me:
+
+- I am a generalist. Give me any tech problem and I will solve it.
+
+- I <3 [suffering oriented programming](http://nathanmarz.com/blog/suffering-oriented-programming.html)
+  - make it work
+  - make it beautiful
+  - make it fast
+
+- My setup
+  - os: nixos
+  - terminal emulator: kitty
+  - ide: helix (zellij yazi)
+  - try [my cool kitty themes](https://github.com/chuu-p/doki-kitty-themes)!
+
+- My philosophy
+  - programming is fun
+	- tech should be fun 
+	- programmers are artists and their ide is their instrument	- I want to play it very well  
+
+---
+
+This website / blog is a static site generator I wrote in rust.
 
 Powered by
 - [maud](https://github.com/lambda-fairy/maud)
