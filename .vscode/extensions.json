@@ -1,14 +1,3 @@
 {
-    "recommendations": [
-        "rust-lang.rust-analyzer",
-        // ########################
-        "bierner.emojisense",
-        "vadimcn.vscode-lldb",
-        "unthrottled.doki-theme",
-        "tamasfe.even-better-toml",
-        "foam.foam-vscode",
-        "skellock.just",
-        "yzhang.markdown-all-in-one",
-        "gruntfuggly.todo-tree"
-    ]
+  "recommendations": ["astro-build.astro-vscode", "unifiedjs.vscode-mdx"]
 }
