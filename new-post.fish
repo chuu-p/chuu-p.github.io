@@ -22,6 +22,7 @@ function read_confirm -a prompt
     end
 end
 
+read -l -P "enter slug of new post: " post_slug
 read -l -P "enter title of new post: " post_title
 read -l -P "enter description of new post: " post_description
 
@@ -41,8 +42,8 @@ end
 if read_confirm "mastodon comments? [y/N] "
     set toot_content "New Blog-Post: $post_title!"\n\n"$post_description"\n\n"https://chuu.dev/blog/$post_title"
 
-    # set toot_resp (toot post $toot_content)
-    set toot_resp "Toot posted: https://mastodon.social/@chuu_p/114548027542551647"
+    set toot_resp (toot post $toot_content)
+    # set toot_resp "Toot posted: https://mastodon.social/@chuu_p/114548027542551647"
 
     set toot_split (string split / $toot_resp)
     set toot_id $toot_split[-1]
@@ -53,7 +54,23 @@ commentsTootId: \"$toot_id\""
 end
 
 set header "$header
+
+tags: ['tag1', 'tag2']
 ---
 "
 
-echo $header
+set header_sep "tags: ['tag1', 'tag2']
+---"
+
+# echo $header
+
+npm run new $post_slug
+
+set content (cat ./src/content/blog/$post_slug.md | string collect)
+set new_content (string replace -- $header_sep $header $content | string collect)
+
+# echo old content $content
+# echo new content $new_content
+# echo $new_content >./src/content/blog/$post_slug.md
+mv ./src/content/blog/$post_slug.md ./src/content/blog/$post_slug.mdx
+echo created ./src/content/blog/$post_slug.mdx successfully!
