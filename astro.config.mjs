@@ -1,7 +1,7 @@
 // @ts-check
 
+// import vercel from '@astrojs/vercel'
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
-import vercel from '@astrojs/vercel'
 import AstroPureIntegration from 'astro-pure'
 import { defineConfig } from 'astro/config'
 import rehypeKatex from 'rehype-katex'
@@ -30,7 +30,7 @@ import config from './src/site.config.ts'
 export default defineConfig({
   // Top-Level Options
   site: 'https://chuu.dev',
-  // base: '/',
+  base: '/',
   trailingSlash: 'never',
 
   // Adapter
@@ -64,9 +64,9 @@ export default defineConfig({
 
     // Temporary fix vercel adapter
     // static build method is not needed
-    outputCopier({
-      integ: ['sitemap', 'pagefind']
-    })
+    // outputCopier({
+    //   integ: ['sitemap', 'pagefind']
+    // })
   ],
   // root: './my-project-directory',
 
