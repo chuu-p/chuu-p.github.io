@@ -50,31 +50,32 @@ const primaryColor = data.heroImage?.color ?? 'hsl(var(--primary) / var(--un-tex
 ---
 
 <!-- TODO --><!-- miku: true --><!-- mikuImg: "miku_jump" --><!-- mikuQuote: "Hit the GRTTy!" --><!-- brainmade: true  -->
-
 <PageLayout
   meta={{ articleDate, description, ogImage: socialImage, title }}
   highlightColor={primaryColor}
   back='/blog'
 >
-{
-  miku && (
-  <div style='float:right; max-width:50%; margin-left:25px;'>
-      <img src={`/images/miku/${mikuImg}.png`} alt='Miku illustration' />
-      <blockquote class='text-sm text-muted-foreground'>
-        <p>{mikuQuote}</p>
-      </blockquote>
-    </div>
-  )
-}
+  {
+    miku && (
+      <div style='float:right; max-width:33%; margin-left:25px;'>
+        <img src={`/images/miku/${mikuImg}.png`} alt='Miku illustration' />
+        <blockquote class='text-sm text-muted-foreground'>
+          <p>{mikuQuote}</p>
+        </blockquote>
+      </div>
+    )
+  }
   {!!headings.length && <TOC {headings} slot='sidebar' />}
 
   <Hero {data} {remarkPluginFrontmatter} slot='header' />
 
   <slot />
 
- <a href="http://brainmade.org" target="_blank">
-   <img src={`/images/white-logo.svg`} alt='Brainmade Mark' style='float:right; max-width:50%; margin-left:25px;' />
- </a>
+  <div align='center'>
+    <a href='https://brainmade.org/'>
+      <img src={`/images/white-logo.svg`} alt='Brainmade' />
+    </a>
+  </div>
 
   <Comments comments={comments} commentsTootId={commentsTootId} />
 

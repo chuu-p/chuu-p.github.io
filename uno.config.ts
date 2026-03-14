@@ -33,7 +33,6 @@ const typographyConfig = {
       overflow: 'hidden',
       'border-width': '1px',
       'border-left': 'inherit',
-      'border-radius': 'var(--radius)',
       'padding-inline': '1.6rem',
       'box-shadow': '0 5px 0 ' + bgMuted
     },
@@ -91,7 +90,6 @@ const typographyConfig = {
     },
     // Others
     img: {
-      'border-radius': 'var(--radius)',
       margin: '0 auto'
     },
     hr: {

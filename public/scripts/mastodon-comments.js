@@ -4,7 +4,6 @@ const styles = `
   --font-size: 1.0rem;
 
   --block-border-width: 1px;
-  --block-border-radius: 3px;
   --block-border-color: #ededf0;
   --block-background-color: #f7f8f8;
 
@@ -23,7 +22,6 @@ const styles = `
 
 .mastodon-comment {
   background-color: var(--block-background-color);
-  border-radius: var(--block-border-radius);
   border: var(--block-border-width) var(--block-border-color) solid;
   padding: var(--comment-padding);
   margin-bottom: 1.5rem;
@@ -49,7 +47,6 @@ const styles = `
 .mastodon-comment .author .avatar img {
   margin-right:1rem;
   min-width:60px;
-  border-radius: 5px;
 }
 
 .mastodon-comment .author .details {
