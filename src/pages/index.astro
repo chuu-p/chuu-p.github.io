@@ -27,14 +27,14 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
       <Image
         src={avatar}
         alt='profile'
-        class='h-28 w-auto rounded-full border p-1'
+        class='h-28 w-auto rounded-full'
         loading='eager'
       />
 
       <div class='flex flex-col items-center gap-y-4'>
         <h1 class='text-3xl font-bold'>{config.author}</h1>
         <div class='flex flex-wrap justify-center gap-x-7 gap-y-3'>
-          <Label title='Cologne, Germany'>
+          <Label title='Viersen, Germany'>
             <Icon name='location' class='size-5' slot='icon' />
           </Label>
           <Label

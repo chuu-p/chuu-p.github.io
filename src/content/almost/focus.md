@@ -1,14 +1,14 @@
-+++
-title = "GRTTy Stack: gRPC Rust React Typescript"
-date = 2025-02-27
-category = "rust"
-
-[extra]
-comments = true
-postid = "114075174358638781"
-miku_img = "miku_jump"
-miku_q = "Hit the GRTTy!"
-+++
+---
+title: Perfect Routines
+description: 'Not practice makes perfect, but perfect practice makes perfect. Do you have the routine of a black belt?'
+publishDate: 2025-05-22 12:10:42
+tags: ['Life', 'Dev']
+comments: false
+commentsTootId: "0"
+miku: true
+mikuImg: "miku_yoro"
+mikuQuote: "A day only has 16 hours."
+---
 
 ## #dev/project/blog/post on focus
 
@@ -39,4 +39,14 @@ I was climbing from silver to gold in league of legends, after playing for just 
 I played every day, for every free hour I had, like going home early from my job to grind the rest of that day, evening and night.
 {Rest of the story}
 I made it just in time
+
+## Do you have the routine of a black belt?
+
+Not practice makes perfect, but perfect practice makes perfect.
+
+But not one perfect practice makes perfect, but hundreds or thousands of perfect training sessions.
+
+This is why you need perfect routines
+
+
 

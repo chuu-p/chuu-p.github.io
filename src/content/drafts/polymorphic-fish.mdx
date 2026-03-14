@@ -1,0 +1,199 @@
+---
+title: 'Polymorphic executables in fish shell'
+publishDate: '2025-04-27'
+updatedDate: '2025-04-27'
+description: 'This blog post explains what are polymorphic executables are and how to use polymorphic executables in fish shell.'
+tags:
+  - Dev
+  - Fish
+language: 'English'
+comments: false
+commentsTootId: "0"
+miku: true
+mikuImg: "miku_wai"
+mikuQuote: "Give a man a fish shell..."
+---
+
+I was inspired by [this video](https://www.youtube.com/watch?v=dv6NP7qjMS0) to start using polymorphic executables. I use fish-shell as my default shell, so this blog post explains what are polymorphic executables are and how to use polymorphic executables in fish shell.
+
+### What are polymorphic executables?
+
+Polymorphic executables are one "main" shell script, that has a different behaviour depending on how it was called. The following script prints "hello" when called as ./hello (with a soft link) and prints "world" when called as ./world and prints "main" in any other case.
+
+~~~sh title="poly.sh"
+#!/usr/bin/env bash
+
+# Determine how the script was called by checking the symbolic link.
+# $0 contains the name of the script as it was called.
+
+case "$(basename "$0")" in
+  "hello")
+    echo "hello"
+    ;;
+  "world")
+    echo "world"
+    ;;
+  *)
+    echo "main"
+    ;;
+esac
+~~~
+
+~~~sh
+/tmp ❱ ./main
+main
+/tmp ❱ ./hello
+hello
+/tmp ❱ ./world
+world
+/tmp ❱ ll main hello world
+lrwxrwxrwx 1 chuu users   4 27. Apr 15:50 hello -> main
+-rwxr-xr-x 1 chuu users 333 27. Apr 15:51 main
+lrwxrwxrwx 1 chuu users   4 27. Apr 15:50 world -> main
+~~~
+
+### Why use polymorphic executables?
+
+As an example, Busybox exemplifies the power of a single, small executable providing a multitude of Unix utilities. Its polymorphic nature allows it to act as ls, cp, mv, and many other commands, significantly reducing the system's footprint, which is crucial in embedded systems. This project uses polymorphic executables, ex:
+
+~~~sh
+cat -> /bin/busybox
+false -> /bin/busybox
+kill -> /bin/busybox
+ln -> /bin/busybox
+ls -> /bin/busybox
+lsattr -> /bin/busybox
+zcat -> /bin/busybox
+~~~
+
+### How can I use polymorphic executables in fish shell?
+
+My favorite shell is fish, I want to use this functionality, and did not find any resources online of people doing it, so I implemented it myself. This is how:
+
+~~~fish title="poly.fish"
+#!/usr/bin/env fish
+
+set invoked_name (basename (status current-filename))
+echo "invoked name: $invoked_name"
+
+switch $invoked_name
+    case hello
+        echo hello
+
+    case world
+        echo world
+
+    case "*"
+        echo "Unknown invocation: $invoked_name"
+end
+~~~
+
+In action:
+
+~~~sh
+/tmp ❱ hx poly.fish
+/tmp ❱ ln -s poly.fish hello
+/tmp ❱ ln -s poly.fish world
+/tmp ❱ ./hello
+invoked name: hello
+hello
+/tmp ❱ ./world
+invoked name: world
+world
+/tmp ❱ ./poly.fish
+invoked name: poly.fish
+Unknown invocation: poly.fish
+~~~
+
+### Practical applications
+
+When you connect to a second display and want to change the display mode on windows,you press `super+p` to bring up the display options menu and then choose a display mode with your mouse (`super` = `windows` button). It is also possible to cycle through the display modes by repediately pressing `super+p`.
+
+I wanted to have a similar functionality in my system, so i added it to my i3 config. The way i implemented it is as follows:
+
+~~~nix title="i3-keybindings.nix"
+...
+  "${mod}+p" = "exec sh -c '/home/chuu/git/nixos/PATH/c-display-first'";
+  "${mod}+Control+p" = "exec sh -c '/home/chuu/git/nixos/PATH/c-display-mirror'";
+  "${mod}+Shift+p" = "exec sh -c '/home/chuu/git/nixos/PATH/c-display-extend'";
+  "${mod}+Shift+Control+p" = "exec sh -c '/home/chuu/git/nixos/PATH/c-display-second'";
+...
+~~~
+
+I decided on an imperative approach. Now, that I used the system for 6 months I still am very pleased with this decision.
+
+- `super+p` -> only laptop display
+- `super+Control+p` -> laptop diplay on + mirror laptop display to second monitor
+- `super+Shift+p` -> laptop diplay on + extend laptop display to second monitor
+- `super+Shift+Control+p` -> only second display
+
+I implemented this functionality with a polymorphic executable with fish. The main file is `displayctl.fish` with soft-links to the various `c-display-X` imperative commands.
+
+In `/home/chuu/git/nixos/PATH`:
+
+~~~
+~/g/nixos/PATH macho ↑14 19.9s ❱ ll | grep display
+lrwxrwxrwx 1 chuu users   15 Apr 30 10:52 c-display-extend -> displayctl.fish
+lrwxrwxrwx 1 chuu users   15 May  6 23:28 c-display-first -> displayctl.fish
+lrwxrwxrwx 1 chuu users   15 Apr 30 10:52 c-display-mirror -> displayctl.fish
+lrwxrwxrwx 1 chuu users   15 Apr 30 10:52 c-display-second -> displayctl.fish
+-rwxr-xr-x 1 chuu users 1511 May  7 12:28 displayctl.fish
+~~~
+
+~~~fish title="displayctl.fish"
+#!/usr/bin/env fish
+
+# This is the polymorphic executable.
+# It checks how it was called and executes different code based on that.
+
+set invoked_name (basename (status current-filename))
+
+function check_status
+    if test $status -eq 0
+        notify-send "$argv OK!"
+    else
+        notify-send "$argv ERROR!"
+        exit 1
+    end
+end
+
+switch $invoked_name
+    case c-display-mirror
+        xrandr --output HDMI-A-0 --mode 1920x1080 --scale 1.333x1.333 --same-as eDP
+        check_status c-display-mirror
+
+    case c-display-extend
+        xrandr --output eDP --auto --output HDMI-A-0 --auto --right-of eDP
+        check_status c-display-extend
+
+    case c-display-second
+        xrandr --output eDP --off --output HDMI-A-0 --auto
+        check_status c-display-second
+
+    case c-display-first
+        xrandr --output eDP --auto --output HDMI-A-0 --off
+        check_status c-display-first
+
+    case displayctl.fish
+        switch $argv[1]
+            case --install
+                ln -s "displayctl.fish" c-display-mirror
+                ln -s "displayctl.fish" c-display-extend
+                ln -s "displayctl.fish" c-display-second
+                ln -s "displayctl.fish" c-display-first
+                echo install OK
+
+            case --help
+                echo "displayctl.fish [--help / --install]"
+
+            case "*"
+                echo "unknown argument, run: displayctl.fish --help"
+        end
+
+    case "*"
+        echo "unknown invocation: $invoked_name"
+end
+~~~
+
+Thank you for reading, and have fun with polymorphic executables in fish shell!
+

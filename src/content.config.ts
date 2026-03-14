@@ -42,7 +42,8 @@ const blog = defineCollection({
       commentsTootId: z.string().optional(),
       miku: z.boolean().default(false),
       mikuImg: z.string().optional(),
-      mikuQuote: z.string().optional()
+      mikuQuote: z.string().optional(),
+      brainmade: z.boolean().default(false),
     })
 })
 
