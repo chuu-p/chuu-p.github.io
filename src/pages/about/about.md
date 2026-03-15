@@ -31,25 +31,27 @@ About me:
 
 - My philosophy
   - programming is fun
-	- tech should be fun 
-	- programmers are artists and their ide is their instrument	- I want to play it very well  
+  - tech should be fun
+  - programmers are artists and their ide is their instrument - I want to play it very well
 
 ---
 
 This website / blog is a static site generator I wrote in rust.
 
 Powered by
+
 - [maud](https://github.com/lambda-fairy/maud)
 - [handlebars](https://github.com/sunng87/handlebars-rust)
 - [pulldown-cmark](https://github.com/pulldown-cmark/pulldown-cmark)
 
-Inspired by 
+Inspired by
+
 - [0atman's brainmade.org website](https://github.com/0atman/Brainmade-org)
 - [Zola](https://github.com/getzola/zola)
 
 Comments via [Mastodon](https://mastodon.social/@chuu_p)
 
-[Miku-Stickers](https://www.sigstick.com/pack/Ds8XSC82a5s1iBSx4Bhi) by [kal (store-KP-girl)](https://www.sigstick.com/stickers?author=kal%20(store-KP-girl))
+[Miku-Stickers](https://www.sigstick.com/pack/Ds8XSC82a5s1iBSx4Bhi) by [kal (store-KP-girl)](<https://www.sigstick.com/stickers?author=kal%20(store-KP-girl)>)
 
 <div align="center">
     <a href="https://brainmade.org/">

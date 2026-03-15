@@ -24,12 +24,7 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
 <PageLayout meta={{ title: 'Home' }} highlightColor='#659EB9'>
   <main class='flex w-full flex-col items-center'>
     <section class='animate mb-10 flex flex-col items-center gap-y-7' id='content-header'>
-      <Image
-        src={avatar}
-        alt='profile'
-        class='h-28 w-auto rounded-full'
-        loading='eager'
-      />
+      <Image src={avatar} alt='profile' class='h-28 w-auto rounded-full' loading='eager' />
 
       <div class='flex flex-col items-center gap-y-4'>
         <h1 class='text-3xl font-bold'>{config.author}</h1>
@@ -37,24 +32,24 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
           <Label title='Viersen, Germany'>
             <Icon name='location' class='size-5' slot='icon' />
           </Label>
-          <Label
-            title='Github'
-            as='a'
-            href='https://github.com/chuu-p'
-            target='_blank'
-          >
+          <Label title='Github' as='a' href='https://github.com/chuu-p' target='_blank'>
             <Icon name='github' class='size-5' slot='icon' />
           </Label>
         </div>
-      </div>      
+      </div>
+
+      <Image
+        src='https://ghchart.rshah.org/chuu-p'
+        alt='github activities'
+        inferSize
+        loading='lazy'
+      />
     </section>
 
     <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
       <Section title='About'>
         <p class='text-muted-foreground'>Software Engineer</p>
-        <p class='text-muted-foreground'>
-          Hi! Welcome to my personal website / blog!
-        </p>
+        <p class='text-muted-foreground'>Hi! Welcome to my personal website / blog!</p>
         <!-- <Button title='More about me' class='w-fit self-end' href='/about' style='ahead' /> -->
       </Section>
       {
@@ -101,7 +96,8 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
       />
     </Section> */
       }
-      {/*
+      {
+        /*
 
       <Section title='Education'>
         <Card
@@ -139,7 +135,8 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
         <SkillLayout title='Backend' skills={backend />
       </Section>
 
-      */}
+      */
+      }
     </div>
   </main>
 </PageLayout>
