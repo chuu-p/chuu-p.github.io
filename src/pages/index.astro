@@ -43,6 +43,7 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
         alt='github activities'
         inferSize
         loading='lazy'
+        style='filter: invert(1)'
       />
     </section>
 
@@ -137,6 +138,11 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
 
       */
       }
+      <div style="align='center'">
+        <a href='https://brainmade.org/'>
+          <img src={`/images/white-logo.svg`} alt='Brainmade' />
+        </a>
+      </div>
     </div>
   </main>
 </PageLayout>
