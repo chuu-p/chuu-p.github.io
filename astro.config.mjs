@@ -56,7 +56,7 @@ export default defineConfig({
     // sitemap(),
     // mdx(),
     UnoCSS({ injectReset: true }),
-    AstroPureIntegration(config),
+    AstroPureIntegration(config)
     // (await import('@playform/compress')).default({
     //   SVG: false,
     //   Exclude: ['index.*.js']

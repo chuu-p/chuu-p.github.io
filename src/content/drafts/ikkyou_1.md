@@ -7,7 +7,6 @@ miku_img = "miku_dry"
 miku_q = "JOIN, and DON'T DIE!"
 +++
 
-
 - i moved at the end of 2022
 - from my balcony, i look over a graveyard
 - around christmas time, there were a lot of candles buring in the night, that the family of the dead people lit for them (this is a tradition in germany)
@@ -32,7 +31,7 @@ is easier to grasp than 10^33 years (or more).
 - it will be able to turn humanity into a spacefaring species
 - then, the theoretical limit of a human lifespan will be reached (~10^33 years)
 - this is my goal
-- this is "don't die" a movement started by bryan johnson, which pushes a radically healthy life 
+- this is "don't die" a movement started by bryan johnson, which pushes a radically healthy life
 
 > my cult is better than your cult
 

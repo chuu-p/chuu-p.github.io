@@ -1,16 +1,21 @@
 ---
-const { comments, commentsTootId } = Astro.props;
+const { comments, commentsTootId } = Astro.props
 ---
 
-{comments ? <mastodon-comments host="mastodon.social" user="chuu_p" tootId={`${commentsTootId}`}></mastodon-comments> : <p>Comments are deactivated</p>}
+{
+  comments ? (
+    <mastodon-comments host='mastodon.social' user='chuu_p' tootId={`${commentsTootId}`} />
+  ) : (
+    <p>Comments are deactivated</p>
+  )
+}
 
 <style>
   mastodon-comments {
     border-radius: 0.75rem;
-    
 
     --font-color: var(--foreground);
-    --font-size: 1.0rem;
+    --font-size: 1rem;
 
     --block-border-width: 1px;
     --block-border-radius: 3px;
@@ -24,7 +29,7 @@ const { comments, commentsTootId } = Astro.props;
   @media only screen and (max-width: 1024px) {
     mastodon-comments {
       --comment-indent: 20px;
-      }
+    }
   }
 
   @media only screen and (max-width: 640px) {

@@ -6,7 +6,6 @@ draft = true
 postid = 114075174358638781
 +++
 
-~~~html
+```html
 <script src="https://gist.github.com/chuu-p/{{ gist_id }}.js?file={{ file }}"></script>
-~~~
-
+```

@@ -8,10 +8,10 @@ tags:
   - Fish
 language: 'English'
 comments: false
-commentsTootId: "0"
+commentsTootId: '0'
 miku: true
-mikuImg: "miku_wai"
-mikuQuote: "Give a man a fish shell..."
+mikuImg: 'miku_wai'
+mikuQuote: 'Give a man a fish shell...'
 ---
 
 I was inspired by [this video](https://www.youtube.com/watch?v=dv6NP7qjMS0) to start using polymorphic executables. I use fish-shell as my default shell, so this blog post explains what are polymorphic executables are and how to use polymorphic executables in fish shell.
@@ -20,7 +20,7 @@ I was inspired by [this video](https://www.youtube.com/watch?v=dv6NP7qjMS0) to s
 
 Polymorphic executables are one "main" shell script, that has a different behaviour depending on how it was called. The following script prints "hello" when called as ./hello (with a soft link) and prints "world" when called as ./world and prints "main" in any other case.
 
-~~~sh title="poly.sh"
+```sh title="poly.sh"
 #!/usr/bin/env bash
 
 # Determine how the script was called by checking the symbolic link.
@@ -37,9 +37,9 @@ case "$(basename "$0")" in
     echo "main"
     ;;
 esac
-~~~
+```
 
-~~~sh
+```sh
 /tmp ❱ ./main
 main
 /tmp ❱ ./hello
@@ -50,13 +50,13 @@ world
 lrwxrwxrwx 1 chuu users   4 27. Apr 15:50 hello -> main
 -rwxr-xr-x 1 chuu users 333 27. Apr 15:51 main
 lrwxrwxrwx 1 chuu users   4 27. Apr 15:50 world -> main
-~~~
+```
 
 ### Why use polymorphic executables?
 
 As an example, Busybox exemplifies the power of a single, small executable providing a multitude of Unix utilities. Its polymorphic nature allows it to act as ls, cp, mv, and many other commands, significantly reducing the system's footprint, which is crucial in embedded systems. This project uses polymorphic executables, ex:
 
-~~~sh
+```sh
 cat -> /bin/busybox
 false -> /bin/busybox
 kill -> /bin/busybox
@@ -64,13 +64,13 @@ ln -> /bin/busybox
 ls -> /bin/busybox
 lsattr -> /bin/busybox
 zcat -> /bin/busybox
-~~~
+```
 
 ### How can I use polymorphic executables in fish shell?
 
 My favorite shell is fish, I want to use this functionality, and did not find any resources online of people doing it, so I implemented it myself. This is how:
 
-~~~fish title="poly.fish"
+```fish title="poly.fish"
 #!/usr/bin/env fish
 
 set invoked_name (basename (status current-filename))
@@ -86,11 +86,11 @@ switch $invoked_name
     case "*"
         echo "Unknown invocation: $invoked_name"
 end
-~~~
+```
 
 In action:
 
-~~~sh
+```sh
 /tmp ❱ hx poly.fish
 /tmp ❱ ln -s poly.fish hello
 /tmp ❱ ln -s poly.fish world
@@ -103,7 +103,7 @@ world
 /tmp ❱ ./poly.fish
 invoked name: poly.fish
 Unknown invocation: poly.fish
-~~~
+```
 
 ### Practical applications
 
@@ -111,14 +111,14 @@ When you connect to a second display and want to change the display mode on wind
 
 I wanted to have a similar functionality in my system, so i added it to my i3 config. The way i implemented it is as follows:
 
-~~~nix title="i3-keybindings.nix"
+```nix title="i3-keybindings.nix"
 ...
   "${mod}+p" = "exec sh -c '/home/chuu/git/nixos/PATH/c-display-first'";
   "${mod}+Control+p" = "exec sh -c '/home/chuu/git/nixos/PATH/c-display-mirror'";
   "${mod}+Shift+p" = "exec sh -c '/home/chuu/git/nixos/PATH/c-display-extend'";
   "${mod}+Shift+Control+p" = "exec sh -c '/home/chuu/git/nixos/PATH/c-display-second'";
 ...
-~~~
+```
 
 I decided on an imperative approach. Now, that I used the system for 6 months I still am very pleased with this decision.
 
@@ -131,16 +131,16 @@ I implemented this functionality with a polymorphic executable with fish. The ma
 
 In `/home/chuu/git/nixos/PATH`:
 
-~~~
+```
 ~/g/nixos/PATH macho ↑14 19.9s ❱ ll | grep display
 lrwxrwxrwx 1 chuu users   15 Apr 30 10:52 c-display-extend -> displayctl.fish
 lrwxrwxrwx 1 chuu users   15 May  6 23:28 c-display-first -> displayctl.fish
 lrwxrwxrwx 1 chuu users   15 Apr 30 10:52 c-display-mirror -> displayctl.fish
 lrwxrwxrwx 1 chuu users   15 Apr 30 10:52 c-display-second -> displayctl.fish
 -rwxr-xr-x 1 chuu users 1511 May  7 12:28 displayctl.fish
-~~~
+```
 
-~~~fish title="displayctl.fish"
+```fish title="displayctl.fish"
 #!/usr/bin/env fish
 
 # This is the polymorphic executable.
@@ -193,7 +193,6 @@ switch $invoked_name
     case "*"
         echo "unknown invocation: $invoked_name"
 end
-~~~
+```
 
 Thank you for reading, and have fun with polymorphic executables in fish shell!
-

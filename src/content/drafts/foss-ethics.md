@@ -12,8 +12,6 @@ miku_q = "Hit the GRTTy!"
 
 asdf:
 
-
 - only <10% of peopple in germany earn more than 70k per year
 - everyone is kinda poor
 - i cannot try 10 cars in a day but 10 programs i can
-

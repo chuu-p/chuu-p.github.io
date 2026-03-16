@@ -37,15 +37,19 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
           </Label>
         </div>
       </div>
-
-      <Image
-        src='https://ghchart.rshah.org/chuu-p'
-        alt='github activities'
-        inferSize
-        loading='lazy'
-        style='filter: invert(1)'
-      />
     </section>
+
+    <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
+    <Section title='Activity'>
+        <Image
+          src='https://ghchart.rshah.org/chuu-p'
+          alt='github activities'
+          inferSize
+          loading='lazy'
+          style='filter: invert(1); margin-bottom: 50px;'
+        />
+    </Section>
+      </div>
 
     <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
       <Section title='About'>

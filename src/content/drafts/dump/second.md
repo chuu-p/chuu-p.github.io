@@ -5,7 +5,7 @@ date = 2019-11-28
 
 This is my second blog post.
 
-first, given a list of names of artists, their lyrics are scraped from genius.com. 
+first, given a list of names of artists, their lyrics are scraped from genius.com.
 
 ```rust
 pub fn establish_connection() -> SqliteConnection {
@@ -21,14 +21,14 @@ pub fn establish_connection() -> SqliteConnection {
 }
 ```
 
-then a text corpus is created from the scraped lyrics, and the corpus is cleaned of any bad characters. 
+then a text corpus is created from the scraped lyrics, and the corpus is cleaned of any bad characters.
 
 ```tsx
 <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <Container maxWidth="md" sx={{ userSelect: "none", cursor: "default" }}>
-        <RouterProvider router={router} />
-        <Toaster position="bottom-center" reverseOrder={false} />
-    </Container>
+  <CssBaseline />
+  <Container maxWidth='md' sx={{ userSelect: 'none', cursor: 'default' }}>
+    <RouterProvider router={router} />
+    <Toaster position='bottom-center' reverseOrder={false} />
+  </Container>
 </ThemeProvider>
 ```

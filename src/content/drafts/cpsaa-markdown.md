@@ -11,6 +11,7 @@ A markdown template for everyone CPSA-A
 I recently completed my CPSA-Advanced Certification for Software Architects. In this post I want to show a markdown/latex template and typst template that meets all formal criteria, for future Software Architects.
 
 Das PDF-Dokument der Hausarbeit muss folgende formalen Kriterien erfüllen:
+
 1. Schrift: 11pt
 2. Rand: 2,5cm
 3. Einfacher Zeilenabstand

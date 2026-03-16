@@ -10,24 +10,25 @@ miku_img = "miku_music"
 miku_q = "I <3 unattended upgrades!"
 +++
 
+my current nixos configuration setup:
 
-my current nixos configuration setup:  
-- ~/git/nixos/nixos-auto-upgrades.md  
-- ~/git/nixos/flake.nix  
-- ~/git/nixos/g14.nix  
+- ~/git/nixos/nixos-auto-upgrades.md
+- ~/git/nixos/flake.nix
+- ~/git/nixos/g14.nix
 
-symlinked to:  
+symlinked to:
+
 - /etc/nixos/configuration.nix
-- /etc/nixos/flake.nix  
-- /etc/nixos/g14.nix  
+- /etc/nixos/flake.nix
+- /etc/nixos/g14.nix
 
 ### {{title}}
 
-#### 1. enable flakes 
+#### 1. enable flakes
 
 g14 is my hostname, you need to change it to your hostname
 
-~~~nix
+```nix
 {
   description = "A very basic flake";
 
@@ -45,11 +46,11 @@ g14 is my hostname, you need to change it to your hostname
     };
   };
 }
-~~~
+```
 
 #### 2. add auto upgrade service
 
-~~~nix
+```nix
 system.autoUpgrade = {
     enable = true;
     randomizedDelaySec = "30min"; # Adds a random delay to prevent simultaneous updates
@@ -59,33 +60,34 @@ system.autoUpgrade = {
     # email = "your-email@example.com"; # Uncomment to receive email notifications
     # emailOnFailure = true;
 };
-~~~
+```
 
 also, you need to change your rebuild command to:
 
-~~~sh
+```sh
 $ nixos-rebuild switch --flake /etc/nixos
-~~~
+```
 
 if you get the error "Failed to start nvidia-powerd service.", add this line to your `configuration.nix`.
 
-~~~nix
+```nix
 hardware.nvidia.dynamicBoost.enable = false;
-~~~
+```
 
 To see the status of the timer run
 
-~~~sh
+```sh
 $ systemctl status nixos-upgrade.timer
-~~~
+```
 
 The upgrade log can be printed with this command
 
-~~~sh
+```sh
 $ systemctl status nixos-upgrade.service
-~~~
+```
 
 useful links:
+
 - <https://nixos.wiki/wiki/Flakes>
 - <https://nixos.wiki/wiki/Automatic_system_upgrades>
 - <https://aires.fyi/blog/why-is-enabling-automatic-updates-in-nixos-hard/>

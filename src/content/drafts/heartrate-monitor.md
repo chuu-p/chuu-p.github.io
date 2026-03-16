@@ -11,5 +11,3 @@ miku_q = "Punch! Kick! Bite! Fight!"
 Ultrahuman Ring Air
 
 Polar H10
-
-

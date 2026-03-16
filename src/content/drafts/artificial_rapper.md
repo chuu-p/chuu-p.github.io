@@ -6,52 +6,57 @@ draft = true
 categories = ["✨", "💡", "📚"]
 +++
 
-*tl;dr:* this post documents the 
+_tl;dr:_ this post documents the
 
-* [**rapwiz42 colaboratory notebook**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing) and the 
-* [**verse16 python package**](https://github.com/pelgo14/verse16) 
+- [**rapwiz42 colaboratory notebook**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing) and the
+- [**verse16 python package**](https://github.com/pelgo14/verse16)
 
 and outlines their inception and future.
 
 ## how it all came to be...
-one evening in February 2020 my friends and i were buying drinks for the night, discussing possible use cases for ai. 
-one of us came up with the idea to develop an artificial, ai-powered-rapper. we expanded on the concept and when we 
-arrived at my apartment, we thought about of a full blown digital identity, developed and maintained by us, performing 
-self-written rap songs. 
+
+one evening in February 2020 my friends and i were buying drinks for the night, discussing possible use cases for ai.
+one of us came up with the idea to develop an artificial, ai-powered-rapper. we expanded on the concept and when we
+arrived at my apartment, we thought about of a full blown digital identity, developed and maintained by us, performing
+self-written rap songs.
 
 our first thoughts revolved around creating a kind of public figure with an online presence, a face and an animated
-3d model performing rap songs, which it has written itself. we thought about an artificial artist who only publishes 
-**computer generated, but always original content**. with an artificial voice, face and "*life*". the next day i got to 
-work and over the next couple of months, i developed multiple prototypes for this artificial artist, which culminated 
-in the creation of many prototypes, [**verse16**](https://github.com/pelgo14/verse16) and [**rapwiz42**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing). 
+3d model performing rap songs, which it has written itself. we thought about an artificial artist who only publishes
+**computer generated, but always original content**. with an artificial voice, face and "_life_". the next day i got to
+work and over the next couple of months, i developed multiple prototypes for this artificial artist, which culminated
+in the creation of many prototypes, [**verse16**](https://github.com/pelgo14/verse16) and [**rapwiz42**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing).
 
-we tried "static lyric generators" like [**Song Lyrics Generator**](https://www.song-lyrics-generator.org.uk/rap/) and they 
+we tried "static lyric generators" like [**Song Lyrics Generator**](https://www.song-lyrics-generator.org.uk/rap/) and they
 seem nice when you generate the first text, but the illusion fades after you generate further lyrics and realize,
 that the text is almost the same every time, just with changing keywords. this approach is very limited and requires
 keywords from the user to bring some dire needed variation to the lyrics. the next day i came across [**this towardsdatascience article**](https://towardsdatascience.com/arctic-monkeys-lyrics-generator-with-data-augmentation-b9b1f7989db0).
 this lead me on a new path, into the world of natural language processing, especially natural language generation.
- 
-## "These silver-white unicorns were previously unknown to science." 
+
+## "These silver-white unicorns were previously unknown to science."
+
 ### - [GPT-2](https://openai.com/blog/better-language-models/)
-i initially created prototypes for [**lyric generation**](https://github.com/topics/text-generation), 
-**text to rap flow synthesis** (no previous research done), [**voice synthesis**](https://github.com/topics/voice-synthesis), 
+
+i initially created prototypes for [**lyric generation**](https://github.com/topics/text-generation),
+**text to rap flow synthesis** (no previous research done), [**voice synthesis**](https://github.com/topics/voice-synthesis),
 and a small command line [**digital audio workstation**](https://github.com/topics/daw). after creating prototypes for
-a few months, i realized i bit off a bit more than i can chew, for now. a long term goal of this whole collection of 
-projects,cprototypes and thoughts could be a [**digital audio workstation supported by artificial intelligence**](https://pelgo14.github.io/ai-daw). 
-maybe i will be working on this goal in my free time, maybe not, i go with the flow. for now however, (only) the 
-lyric-generating part of the project is robust enough for other developers to use. 
+a few months, i realized i bit off a bit more than i can chew, for now. a long term goal of this whole collection of
+projects,cprototypes and thoughts could be a [**digital audio workstation supported by artificial intelligence**](https://pelgo14.github.io/ai-daw).
+maybe i will be working on this goal in my free time, maybe not, i go with the flow. for now however, (only) the
+lyric-generating part of the project is robust enough for other developers to use.
 
 ## rapwiz42
-[**rapwiz42**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing) 
-is a neural network (gpt-2) and lyric corpus based lyric generation system. 
+
+[**rapwiz42**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing)
+is a neural network (gpt-2) and lyric corpus based lyric generation system.
 
 <!-- ![rapwiz42 colab notebook](/public/img/rapwiz_title.png) -->
-[**rapwiz42 colab notebook**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing) 
 
-first, given a list of names of artists, their lyrics are scraped from genius.com. 
+[**rapwiz42 colab notebook**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing)
+
+first, given a list of names of artists, their lyrics are scraped from genius.com.
 
 ```python
-artists = ["aesop-rock", "mf-doom"] 
+artists = ["aesop-rock", "mf-doom"]
 
 import lyricsgenius as genius
 
@@ -66,7 +71,7 @@ for artist in iter_artist:
         logging.warn(f"Oops! Cant download: {artist}")
 ```
 
-then a text corpus is created from the scraped lyrics, and the corpus is cleaned of any bad characters. 
+then a text corpus is created from the scraped lyrics, and the corpus is cleaned of any bad characters.
 
 ```python
 import fileinput
@@ -111,7 +116,7 @@ Wrote `Lyrics_MFDOOM.json`
 Wrote `lyricdb.txt`
 ```
 
-then a gpt-2 model gets fine-tuned on the text corpus. 
+then a gpt-2 model gets fine-tuned on the text corpus.
 
 ```python
 import gpt-2-simple as gpt2
@@ -138,14 +143,14 @@ gpt2.finetune(sess,
 output:
 
 ```text
-Fetching checkpoint: 1.05Mit [00:00, 248Mit/s]                                                      
+Fetching checkpoint: 1.05Mit [00:00, 248Mit/s]
 
 training...
 
 Fetching encoder.json: 1.05Mit [00:00, 108Mit/s]
 Fetching hparams.json: 1.05Mit [00:00, 175Mit/s]
 Fetching model.ckpt.data-00000-of-00001: 1.42Git [00:14, 98.4Mit/s]
-Fetching model.ckpt.index: 1.05Mit [00:00, 219Mit/s]                                                
+Fetching model.ckpt.index: 1.05Mit [00:00, 219Mit/s]
 Fetching model.ckpt.meta: 1.05Mit [00:00, 66.0Mit/s]
 Fetching vocab.bpe: 1.05Mit [00:00, 147Mit/s]
 Loading checkpoint models/345M/model.ckpt
@@ -269,7 +274,7 @@ class Generator:
 # main
 # ----------------------------------------
 
-line_count = 16 
+line_count = 16
 
 gen = Generator(log_level="INFO")
 lines = gen.generate(line_count, sess)
@@ -289,21 +294,22 @@ Daredevil has been a part of the Marvel comic book pant
 I hate to abuse your patience, but I just can't
 ```
 
-*note, that this is a cut down version of the [**actual code**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing). 
-i did this for better readability and easier understanding.*
+_note, that this is a cut down version of the [**actual code**](https://colab.research.google.com/drive/1C4_CBrSJcUfRopQxaQqlrnU9Ve5Xk33F?usp=sharing).
+i did this for better readability and easier understanding._
 
 ## verse16
-*from [**github.com/pelgo14/verse16**](https://github.com/pelgo14/verse16)*
+
+_from [**github.com/pelgo14/verse16**](https://github.com/pelgo14/verse16)_
 
 install:
 
-```shell 
+```shell
 pip install verse16
 ```
 
 usage:
 
-```shell 
+```shell
 verse16 --help
 verse16 --lines 4
 verse16 --lines 16 --log_level DEBUG
@@ -322,9 +328,10 @@ lines = gen.generate(16)
 list all planned functions with demonstration of where in development this is... maybe someone has some ideas (like for the voice)
 
 ## reference
+
 there are amazing notebooks and articles on the subject of natural language and lyric generation.
 this project incorporates and makes minimal changes to:
-* [towardsdatascience.com/arctic-monkeys-lyrics-generator](https://towardsdatascience.com/arctic-monkeys-lyrics-generator-with-data-augmentation-b9b1f7989db0)
-* [github.com/markriedl/weirdai](https://github.com/markriedl/weirdai)
-* [github.com/minimaxir/gpt-2-simple](https://github.com/minimaxir/gpt-2-simple)
- 
+
+- [towardsdatascience.com/arctic-monkeys-lyrics-generator](https://towardsdatascience.com/arctic-monkeys-lyrics-generator-with-data-augmentation-b9b1f7989db0)
+- [github.com/markriedl/weirdai](https://github.com/markriedl/weirdai)
+- [github.com/minimaxir/gpt-2-simple](https://github.com/minimaxir/gpt-2-simple)
