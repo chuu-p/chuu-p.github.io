@@ -40,23 +40,22 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
     </section>
 
     <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
-    <Section title='Activity'>
+      <Section title='Activity'>
         <Image
           src='https://ghchart.rshah.org/chuu-p'
           alt='github activities'
           inferSize
           loading='lazy'
-          style='filter: invert(1); margin-bottom: 50px;'
+          class='github-chart'
         />
-    </Section>
-      </div>
-
-    <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
-      <Section title='About'>
-        <p class='text-muted-foreground'>Software Engineer</p>
-        <p class='text-muted-foreground'>Hi! Welcome to my personal website / blog!</p>
-        <!-- <Button title='More about me' class='w-fit self-end' href='/about' style='ahead' /> -->
       </Section>
+
+      <!-- <Section title='About'> -->
+      <!--   <p class='text-muted-foreground'>Software Engineer</p> -->
+      <!--   <p class='text-muted-foreground'>Hi! Welcome to my personal website / blog!</p> -->
+      <!--   <Button title='More about me' class='w-fit self-end' href='/about' style='ahead' /> -->
+      <!-- </Section> -->
+
       {
         allPostsByDate.length > 0 && (
           <Section title='Posts'>
@@ -145,3 +144,14 @@ const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
     </div>
   </main>
 </PageLayout>
+
+<style>
+  .github-chart {
+    /* margin-bottom: 50px; */
+    filter: invert(0);
+  }
+
+  :global(html.dark) .github-chart {
+    filter: invert(1);
+  }
+</style>
